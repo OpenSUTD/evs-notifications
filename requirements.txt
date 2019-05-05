@@ -1,0 +1,3 @@
+requests
+python-firebase
+psycopg2-binary
