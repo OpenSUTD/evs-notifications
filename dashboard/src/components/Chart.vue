@@ -44,7 +44,7 @@ export default {
   },
 
   mounted() {
-  	fetch('http://54.255.186.25:8000/balance/20000173')
+  	fetch('http://13.250.48.152:8000/balance/20000173')
   	.then(response => response.json())
   	.then(json => this.plot(json));
   },
