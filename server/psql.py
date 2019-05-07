@@ -25,9 +25,10 @@ def get_accounts():
 
 
 def get_balances_by_username(username):
-    query = f"""SELECT balance.retrieve_date, balance.amount
+    query = f"""SELECT retrieve_date, amount
                 FROM balance
-                WHERE balance.username = '{username}';"""
+                WHERE username = '{username}'
+                ORDER BY balance_id;"""
 
     conn = get_connection()
     cursor = conn.cursor()
