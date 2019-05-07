@@ -9,9 +9,23 @@ module.exports = {
 				backgroundColor: 'rgba(54, 162, 235, 0.3)',
 			}],
 		};
+		let options = {
+			scales: {
+				xAxes: [{
+					type: 'time',
+					time: {
+						unit: 'week',
+						displayFormats: {
+							week: 'D MMM YY',
+						},
+					},
+				}],
+			},
+		};
 		let timeSeries = new Chart(ctx, {
 			type: 'line',
 			data,
+			options,
 		});
 		return timeSeries;
 	},
@@ -36,6 +50,7 @@ module.exports = {
 			type: 'pie',
 			data,
 			options: {
+				maintainAspectRatio: false,
 				title: {
 					text: 'Number of days of air-con used',
 					display: true,
@@ -67,11 +82,15 @@ module.exports = {
 		for (let i=0; i<nbins; i++) labels.push((i * 0.1).toFixed(1));
 		labels.push(`≥ ${(nbins*0.1).toFixed(1)}`);
 
+		// remove instances of 0 usage
+		labels = labels.slice(1);
+		binCounts = binCounts.slice(1);
+
 		let ctx = document.getElementById(elementId).getContext('2d');
 		let data = {
 			labels,
 			datasets: [{
-				label: 'Daily usage amounts',
+				label: 'Daily usage amounts ($)',
 				data: binCounts,
 				backgroundColor: '#ffce56',
 			}],

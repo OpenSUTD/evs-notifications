@@ -11,7 +11,7 @@
 
 	    <v-layout row>
 	      <v-flex xs8>
-	      	<v-container mr-3 elevation-2>
+	      	<v-container elevation-2>
 	    			<canvas id="usageHist"></canvas>
 					</v-container>
 	      </v-flex>
@@ -31,14 +31,16 @@ import { timeSeries, usagePie, usageHist } from './plots.js';
 
 export default {
   name: 'Chart',
+  data() {
+  	return {
+  		balances: null,
+  	};
+  },
 
   methods: {
-  	plot(balances) {
-  		let dates = balances.map(t => t[0]);
-  		let amounts = balances.map(t => t[1]);
-
-  		let timeSeriesChart = timeSeries('timeSeries', dates, amounts);
-  		let usagePieChart = usagePie('usagePie', amounts);
+  	plot(dates, amounts) {
+  		timeSeries('timeSeries', dates, amounts);
+  		usagePie('usagePie', amounts);
   		usageHist('usageHist', amounts);
   	},
   },
@@ -46,13 +48,25 @@ export default {
   mounted() {
   	fetch('http://13.250.48.152:8000/balance/20000173')
   	.then(response => response.json())
-  	.then(json => this.plot(json));
+  	.then(balances => {
+  		let dates = balances.map(t => t[0]).map(date => Date.parse(date));
+  		let amounts = balances.map(t => t[1]);
+
+  		this.plot(dates, amounts);
+  		this.balances = { dates, amounts };
+  	});
   },
 }
 </script>
 
 <style scoped>
 #chart {
+	height: 100%;
+	width: 50%;
+	margin: auto;
+}
+
+.container {
 	height: 100%;
 }
 </style>
