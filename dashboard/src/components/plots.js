@@ -14,9 +14,10 @@ module.exports = {
 				xAxes: [{
 					type: 'time',
 					time: {
-						unit: 'week',
+						unit: dates.length <= 40 ? 'day' : 'week',
 						displayFormats: {
 							week: 'D MMM YY',
+							day: 'D MMM YY',
 						},
 					},
 				}],
