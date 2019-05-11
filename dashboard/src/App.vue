@@ -1,69 +1,59 @@
 <template>
   <v-app id="app">
-    <!-- disable "height: 100%" style -->
-    <v-navigation-drawer permanent height>
-      <v-toolbar flat>
-        <v-list>
-          <v-list-tile>
-            <v-list-tile-action>
-              <v-icon>dashboard</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-title class="title">
-              EVS Dashboard
-            </v-list-tile-title>
-          </v-list-tile>
-        </v-list>
-      </v-toolbar>
+    <NavigationDrawer
+      :pages="pages"
+      @changeDisplay="flag => { display = flag }" />
 
-      <v-divider />
-
-      <v-list class="pt-0">
-        <v-list-tile v-ripple @click="display = 'usage'">
-          <v-list-tile-action>
-            <v-icon>timeline</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Usage History</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-tile v-ripple @click="display = 'topup'">
-          <v-list-tile-action>
-            <v-icon>autorenew</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Topup Statistics</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-
-        <v-list-tile v-ripple @click="display = 'notifications'">
-          <v-list-tile-action>
-            <v-icon>announcement</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>Notifications</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
-    </v-navigation-drawer>
-
-    <Usage v-if="display === 'usage'" :balances="balances" />
+    <Usage v-if="display === flags.usage" :balances="balances" />
+    <Topup v-if="display === flags.topup" />
+    <Notifications v-if="display === flags.notifications" />
   </v-app>
 </template>
 
 <script>
+import NavigationDrawer from './components/NavigationDrawer.vue';
 import Usage from './components/Usage.vue';
+import Topup from './components/Topup.vue';
+import Notifications from './components/Notifications.vue';
+
+let flags = {
+  usage: 'usage',
+  topup: 'topup',
+  notifications: 'notifications',
+};
+let pages = [
+  {
+    title: 'Usage History',
+    icon: 'timeline',
+    flag: flags.usage,
+  },
+  {
+    title: 'Topup Statistics',
+    icon: 'autorenew',
+    flag: flags.topup,
+  },
+  {
+    title: 'Notifications',
+    icon: 'announcement',
+    flag: flags.notifications,
+  },
+];
 
 export default {
   name: 'app',
   components: {
+    NavigationDrawer,
     Usage,
+    Topup,
+    Notifications,
   },
 
   data() {
     return {
       balances: null,
       display: 'usage',
+      flags,
+      pages,
     };
   },
 
