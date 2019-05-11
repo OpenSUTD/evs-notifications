@@ -1,3 +1,5 @@
+let moment = require('moment');
+
 module.exports = {
 	timeSeries: (elementId, dates, amounts) => {
 		let ctx = document.getElementById(elementId).getContext('2d');
@@ -21,6 +23,20 @@ module.exports = {
 						},
 					},
 				}],
+			},
+			tooltips: {
+				callbacks: {
+					title: (tooltipItems, data) => {
+						let item = tooltipItems[0];
+						let date = Date.parse(item.xLabel);
+						let formattedDate = moment(date).format('D MMM YY');
+						return formattedDate;
+					},
+					label: (tooltipItem, data) => {
+						let amt = tooltipItem.yLabel;
+						return '$' + amt.toFixed(2);
+					},
+				},
 			},
 		};
 		let timeSeries = new Chart(ctx, {
@@ -47,16 +63,17 @@ module.exports = {
 				backgroundColor: ['#ff6384', '#36a2eb'],
 			}],
 		};
+		let options = {
+			maintainAspectRatio: false,
+			title: {
+				text: 'Number of days of air-con used',
+				display: true,
+			},
+		};
 		let usagePie = new Chart(ctx, {
 			type: 'pie',
 			data,
-			options: {
-				maintainAspectRatio: false,
-				title: {
-					text: 'Number of days of air-con used',
-					display: true,
-				},
-			},
+			options,
 		});
 		return usagePie;
 	},
@@ -96,9 +113,25 @@ module.exports = {
 				backgroundColor: '#ffce56',
 			}],
 		};
+		let options = {
+			tooltips: {
+				callbacks: {
+					title: (tooltipItems, data) => {
+						let item = tooltipItems[0];
+						return item.yLabel;
+					},
+					label: (tooltipItem, data) => {
+						let label = tooltipItem.xLabel;
+						let heading = data.datasets[0].label;
+						return `${heading}: ${label}`;
+					}
+				},
+			},
+		}
 		let usageHist = new Chart(ctx, {
 			type: 'bar',
 			data,
+			options,
 		});
 		return usageHist;
 	},
