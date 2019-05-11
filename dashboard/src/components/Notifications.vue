@@ -1,6 +1,7 @@
 <template>
 	<div id="notifications">
 		<h1>Notifications</h1>
+		<p>Set up Telegram notifications when your credit balance falls below a preset threshold.</p>
 	</div>
 </template>
 
@@ -11,4 +12,9 @@ export default {
 </script>
 
 <style scoped>
+#notifications {
+	height: 100%;
+	margin: auto;
+	margin-top: 60px;
+}
 </style>
