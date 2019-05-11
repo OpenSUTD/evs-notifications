@@ -49,7 +49,8 @@ function timeSeriesOptions(title, label, timeUnit) {
 				},
 				label: (tooltipItem, data) => {
 					let amt = tooltipItem.yLabel;
-					return '$' + amt.toFixed(2);
+					let label = '$' + amt.toFixed(2);
+					return label;
 				},
 			},
 		},
@@ -158,6 +159,7 @@ module.exports = {
 		let data = {
 			labels,
 			datasets: [{
+				label: 'Daily usage amount ($)',
 				data: binCounts,
 				backgroundColor: '#ffce56',
 			}],
