@@ -4,6 +4,7 @@
       :pages="pages"
       @changeDisplay="flag => { display = flag }" />
 
+    <Balance v-if="display === flags.balance" :balances="balances" />
     <Usage v-if="display === flags.usage" :balances="balances" />
     <Topup v-if="display === flags.topup" />
     <Notifications v-if="display === flags.notifications" />
@@ -12,16 +13,23 @@
 
 <script>
 import NavigationDrawer from './components/NavigationDrawer.vue';
+import Balance from './components/Balance.vue';
 import Usage from './components/Usage.vue';
 import Topup from './components/Topup.vue';
 import Notifications from './components/Notifications.vue';
 
 let flags = {
+  balance: 'balance',
   usage: 'usage',
   topup: 'topup',
   notifications: 'notifications',
 };
 let pages = [
+  {
+    title: 'Daily Balance',
+    icon: 'credit_card',
+    flag: flags.balance,
+  },
   {
     title: 'Usage History',
     icon: 'timeline',
@@ -43,6 +51,7 @@ export default {
   name: 'app',
   components: {
     NavigationDrawer,
+    Balance,
     Usage,
     Topup,
     Notifications,
@@ -51,7 +60,7 @@ export default {
   data() {
     return {
       balances: null,
-      display: 'usage',
+      display: flags.balance,
       flags,
       pages,
     };

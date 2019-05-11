@@ -10,7 +10,7 @@
 	    <v-layout row>
 	    	<v-flex xs12>
 		    	<v-container elevation-2 class="chartContainer">
-						<canvas id="timeSeries"></canvas>
+						<canvas id="usageTimeSeries" />
 		    	</v-container>
 		    </v-flex>
 	    </v-layout>
@@ -32,8 +32,12 @@
 </template>
 
 <script>
-import Chart from 'chart.js';
-import { timeSeries, usagePie, usageHist } from './usage/plots.js';
+import {
+  getPastWeekBalances,
+  getPastMonthBalances,
+  separateBalanceTuples,
+} from './utils/data.js';
+import { usageTimeSeries, usagePie, usageHist } from './utils/plots.js';
 
 export default {
   name: 'Usage',
@@ -48,8 +52,8 @@ export default {
   	plot(balances) {
   		this.destroyExistingCharts();
 
-  		let { dates, amounts } = this.separateBalanceTuples(balances);
-  		let timeSeriesChart = timeSeries('timeSeries', dates, amounts);
+  		let { dates, amounts } = separateBalanceTuples(balances);
+  		let timeSeriesChart = usageTimeSeries('usageTimeSeries', dates, amounts);
   		let usagePieChart = usagePie('usagePie', amounts);
   		let usageHistChart = usageHist('usageHist', amounts);
 
@@ -60,31 +64,18 @@ export default {
   		];
   	},
 
-  	plotAll() {
-  		this.plot(this.balances);
-  	},
-  	plotMonth() {
-  		let filterDate = new Date();
-  		filterDate.setHours(0, 0, 0, 0);  // prevent comparing against current time of day
-  		filterDate.setMonth(filterDate.getMonth() - 1);
-
-  		let filteredBalances = this.balances.filter(t => Date.parse(t[0]) >= filterDate);
-  		this.plot(filteredBalances);
-  	},
-  	plotWeek() {
-  		let filterDate = new Date();
-  		filterDate.setHours(0, 0, 0, 0);
-  		filterDate.setDate(filterDate.getDate() - 7);
-
-  		let filteredBalances = this.balances.filter(t => Date.parse(t[0]) >= filterDate);
-  		this.plot(filteredBalances);
-  	},
-
-    separateBalanceTuples(balances) {
-      let dates = balances.map(t => t[0]).map(date => Date.parse(date));
-      let amounts = balances.map(t => t[1]);
-      return { dates, amounts };
+    plotAll() {
+      this.plot(this.balances);
     },
+    plotMonth() {
+      let filteredBalances = getPastMonthBalances(this.balances);
+      this.plot(filteredBalances);
+    },
+    plotWeek() {
+      let filteredBalances = getPastWeekBalances(this.balances);
+      this.plot(filteredBalances);
+    },
+    
     destroyExistingCharts() {
       // remove existing charts, otherwise new charts will simply overlap
       for (let chart of this.charts) chart.destroy();

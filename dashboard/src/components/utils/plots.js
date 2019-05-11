@@ -1,7 +1,67 @@
+let Chart = require('chart.js');
 let moment = require('moment');
 
+function computeUsages(amounts) {
+		let usages = [];
+		for (let i=1; i<amounts.length; i++) {
+			let usage = amounts[i-1] - amounts[i];
+			if (usage < 0) continue;  // signifies a top-up
+			usage = Math.round(usage * 100) / 100;  // round to 2 d.p.
+			usages.push(usage);
+		}
+		return usages;
+}
+
+function timeSeriesOptions(title, label, timeUnit) {
+	return {
+		title: {
+			text: title,
+			display: true,
+		},
+		legend: {
+			display: false,
+		},
+		scales: {
+			xAxes: [{
+				type: 'time',
+				time: {
+					unit: timeUnit,
+					displayFormats: {
+						week: 'D MMM YY',
+						day: 'D MMM YY',
+					},
+				},
+			}],
+	    yAxes: [{
+	      scaleLabel: {
+	        display: true,
+	        labelString: label,
+	      },
+	    }],
+		},
+		tooltips: {
+			callbacks: {
+				title: (tooltipItems, data) => {
+					let item = tooltipItems[0];
+					let date = Date.parse(item.xLabel);
+					let formattedDate = moment(date).format('D MMM YY');
+					return formattedDate;
+				},
+				label: (tooltipItem, data) => {
+					let amt = tooltipItem.yLabel;
+					return '$' + amt.toFixed(2);
+				},
+			},
+		},
+	};
+}
+
 module.exports = {
-	timeSeries: (elementId, dates, amounts) => {
+	balanceTimeSeries: (elementId, dates, amounts) => {
+		let title = 'Credit balance history';
+		let label = 'Credit balance ($)';
+		let timeUnit = dates.length >= 32 ? 'week': 'day';
+
 		let ctx = document.getElementById(elementId).getContext('2d');
 		let data = {
 			labels: dates,
@@ -10,47 +70,31 @@ module.exports = {
 				backgroundColor: 'rgba(54, 162, 235, 0.3)',
 			}],
 		};
-		let options = {
-			title: {
-				text: 'Credit balance history',
-				display: true,
-			},
-			legend: {
-				display: false,
-			},
-			scales: {
-				xAxes: [{
-					type: 'time',
-					time: {
-						unit: dates.length <= 40 ? 'day' : 'week',
-						displayFormats: {
-							week: 'D MMM YY',
-							day: 'D MMM YY',
-						},
-					},
-				}],
-		    yAxes: [{
-		      scaleLabel: {
-		        display: true,
-		        labelString: 'Credit balance ($)',
-		      },
-		    }],
-			},
-			tooltips: {
-				callbacks: {
-					title: (tooltipItems, data) => {
-						let item = tooltipItems[0];
-						let date = Date.parse(item.xLabel);
-						let formattedDate = moment(date).format('D MMM YY');
-						return formattedDate;
-					},
-					label: (tooltipItem, data) => {
-						let amt = tooltipItem.yLabel;
-						return '$' + amt.toFixed(2);
-					},
-				},
-			},
+		let options = timeSeriesOptions(title, label, timeUnit);
+		let timeSeries = new Chart(ctx, {
+			type: 'line',
+			data,
+			options,
+		});
+		return timeSeries;
+	},
+
+	usageTimeSeries: (elementId, dates, amounts) => {
+		let usages = computeUsages(amounts);
+
+		let title = 'Usage history';
+		let label = 'Usage amount ($)';
+		let timeUnit = dates.length >= 32 ? 'week': 'day';
+
+		let ctx = document.getElementById(elementId).getContext('2d');
+		let data = {
+			labels: dates,
+			datasets: [{
+				data: usages,
+				backgroundColor: 'rgba(54, 162, 235, 0.3)',
+			}],
 		};
+		let options = timeSeriesOptions(title, label, timeUnit);
 		let timeSeries = new Chart(ctx, {
 			type: 'line',
 			data,
@@ -91,13 +135,7 @@ module.exports = {
 	},
 
 	usageHist: (elementId, amounts) => {
-		let usages = [];
-		for (let i=1; i<amounts.length; i++) {
-			let usage = amounts[i-1] - amounts[i];
-			if (usage < 0) continue;  // signifies a top-up
-			usage = Math.round(usage * 100) / 100;  // round to 2 d.p.
-			usages.push(usage);
-		}
+		let usages = computeUsages(amounts);
 
 		let nbins = 10;
 		let binCounts = Array(nbins+1).fill(0);  // bins are multiples of 0.1
