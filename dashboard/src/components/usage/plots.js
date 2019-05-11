@@ -6,12 +6,18 @@ module.exports = {
 		let data = {
 			labels: dates,
 			datasets: [{
-				label: 'Daily credit balance',
 				data: amounts,
 				backgroundColor: 'rgba(54, 162, 235, 0.3)',
 			}],
 		};
 		let options = {
+			title: {
+				text: 'Credit balance history',
+				display: true,
+			},
+			legend: {
+				display: false,
+			},
 			scales: {
 				xAxes: [{
 					type: 'time',
@@ -23,6 +29,12 @@ module.exports = {
 						},
 					},
 				}],
+		    yAxes: [{
+		      scaleLabel: {
+		        display: true,
+		        labelString: 'Credit balance ($)',
+		      },
+		    }],
 			},
 			tooltips: {
 				callbacks: {
@@ -108,12 +120,32 @@ module.exports = {
 		let data = {
 			labels,
 			datasets: [{
-				label: 'Daily usage amounts ($)',
 				data: binCounts,
 				backgroundColor: '#ffce56',
 			}],
 		};
 		let options = {
+			title: {
+				text: 'Amount of credit used per day',
+				display: true,
+			},
+			legend: {
+				display: false,
+			},
+			scales: {
+				xAxes: [{
+					scaleLabel: {
+						display: true,
+						labelString: 'Daily usage amount ($)',
+					},
+				}],
+		    yAxes: [{
+		      scaleLabel: {
+		        display: true,
+		        labelString: 'Counts',
+		      },
+		    }],
+		  },
 			tooltips: {
 				callbacks: {
 					title: (tooltipItems, data) => {
@@ -127,7 +159,7 @@ module.exports = {
 					}
 				},
 			},
-		}
+		};
 		let usageHist = new Chart(ctx, {
 			type: 'bar',
 			data,
