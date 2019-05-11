@@ -1,5 +1,5 @@
 <template>
-	<div id="chart">
+	<div id="usage">
 		<v-btn-toggle mandatory id="toggleDates">
 			<v-btn flat @click="plotAll()">All</v-btn>
 			<v-btn flat @click="plotMonth()">Past Month</v-btn>
@@ -33,10 +33,10 @@
 
 <script>
 import Chart from 'chart.js';
-import { timeSeries, usagePie, usageHist } from './plots.js';
+import { timeSeries, usagePie, usageHist } from './usage/plots.js';
 
 export default {
-  name: 'Chart',
+  name: 'Usage',
   props: ['balances'],
   data() {
   	return {
@@ -52,6 +52,7 @@ export default {
   		let timeSeriesChart = timeSeries('timeSeries', dates, amounts);
   		let usagePieChart = usagePie('usagePie', amounts);
   		let usageHistChart = usageHist('usageHist', amounts);
+
   		this.charts = [
   			timeSeriesChart,
   			usagePieChart,
@@ -90,8 +91,15 @@ export default {
     },
   },
 
+  mounted() {
+    // necessary to allow re-plotting when re-navigated to
+    // from navigation drawer
+    if (this.balances) this.plotAll();
+  },
+
   watch: {
     balances: function(newBalances, oldBalances) {
+      // plot when updated with data from async fetch
       this.balances = newBalances;
       this.plotAll();
     },
@@ -100,14 +108,10 @@ export default {
 </script>
 
 <style scoped>
-#chart {
+#usage {
 	height: 100%;
-	width: 50%;
 	margin: auto;
-}
-
-#toggleDates {
-	margin-top: 32px;
+  margin-top: 60px;
 }
 
 .chartContainer {
