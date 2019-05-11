@@ -1,6 +1,6 @@
 <template>
   <v-app id="app">
-    <Chart />
+    <Chart :balances="balances" />
   </v-app>
 </template>
 
@@ -12,6 +12,21 @@ export default {
   components: {
     Chart,
   },
+
+  data() {
+    return {
+      balances: null,
+    };
+  },
+
+  created() {
+    let serverHost = 'http://13.250.48.152:8000';
+    let accountId = '20000173';
+    let url = `${serverHost}/balance/${accountId}`;
+    fetch(url)
+    .then(response => response.json())
+    .then(json => { this.balances = json });
+  }
 }
 </script>
 

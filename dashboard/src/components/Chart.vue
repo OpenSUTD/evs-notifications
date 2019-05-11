@@ -37,19 +37,14 @@ import { timeSeries, usagePie, usageHist } from './plots.js';
 
 export default {
   name: 'Chart',
+  props: ['balances'],
   data() {
   	return {
-  		balances: [],
   		charts: [],
   	};
   },
 
   methods: {
-  	separateBalanceTuples(balances) {
-  		let dates = balances.map(t => t[0]).map(date => Date.parse(date));
-  		let amounts = balances.map(t => t[1]);
-  		return { dates, amounts };
-  	},
   	plot(balances) {
   		this.destroyExistingCharts();
 
@@ -62,10 +57,6 @@ export default {
   			usagePieChart,
   			usageHistChart,
   		];
-  	},
-  	destroyExistingCharts() {
-  		// remove existing charts, otherwise new charts will simply overlap
-  		for (let chart of this.charts) chart.destroy();
   	},
 
   	plotAll() {
@@ -87,15 +78,23 @@ export default {
   		let filteredBalances = this.balances.filter(t => Date.parse(t[0]) >= filterDate);
   		this.plot(filteredBalances);
   	},
+
+    separateBalanceTuples(balances) {
+      let dates = balances.map(t => t[0]).map(date => Date.parse(date));
+      let amounts = balances.map(t => t[1]);
+      return { dates, amounts };
+    },
+    destroyExistingCharts() {
+      // remove existing charts, otherwise new charts will simply overlap
+      for (let chart of this.charts) chart.destroy();
+    },
   },
 
-  mounted() {
-  	fetch('http://13.250.48.152:8000/balance/20000173')
-  	.then(response => response.json())
-  	.then(balances => {
-  		this.plot(balances);
-  		this.balances = balances;
-  	});
+  watch: {
+    balances: function(newBalances, oldBalances) {
+      this.balances = newBalances;
+      this.plotAll();
+    },
   },
 }
 </script>
