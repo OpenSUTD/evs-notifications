@@ -6,7 +6,7 @@
 
     <Balance v-if="display === flags.balance" :balances="balances" />
     <Usage v-if="display === flags.usage" :balances="balances" />
-    <Topup v-if="display === flags.topup" />
+    <Topup v-if="display === flags.topup" :balances="balances" />
     <Notifications v-if="display === flags.notifications" />
   </v-app>
 </template>
