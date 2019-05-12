@@ -25,6 +25,10 @@ def get_accounts():
 
 
 def get_balances_by_username(username):
+    all_usernames = [acc.username for acc in get_accounts()]
+    if username not in all_usernames:
+        return []
+
     query = f"""SELECT retrieve_date, amount
                 FROM balance
                 WHERE username = '{username}'
