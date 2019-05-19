@@ -1,4 +1,3 @@
-requests
 flask
 flask-cors
 psycopg2-binary
