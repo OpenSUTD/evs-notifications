@@ -3,35 +3,6 @@ sys.path.insert(0, '..')
 
 import psycopg2
 from collections import namedtuple
-import web
-
-
-def get_connection():
-    dbname = 'evs'
-    user = 'ubuntu'
-    conn = psycopg2.connect(f"dbname='{dbname}' user='{user}'")
-    return conn
-
-
-def execute_and_commit(query):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(query)
-    conn.commit()
-
-    cursor.close()
-    conn.close()
-
-
-def execute_and_fetchall(query) -> list:
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(query)
-    rows = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
-    return rows
 
 
 def get_accounts():
@@ -39,17 +10,6 @@ def get_accounts():
     rows = execute_and_fetchall(query)
     Account = namedtuple('Account', 'username password')
     return [Account(*row) for row in rows]
-
-
-def username_valid(username):
-    """
-    Ensures that input username is valid (i.e. exists in database).
-
-    :param username: username of length 8 (by SUTD EVS standard)
-    :return: True if valid
-    """
-    all_usernames = [acc.username for acc in get_accounts()]
-    return username in all_usernames
 
 
 def get_balances_by_username(username):
@@ -74,16 +34,10 @@ def insert_balance(username, retrieve_date, amount):
 
 
 def add_account(username: str, password: str) -> bool:
-    try:
-        web.get_amount(username, password)
-    except AssertionError:
-        return False
-
     query = f"""INSERT INTO account (username, password)
                 VALUES ('{username}', '{password}')
                 ON CONFLICT DO NOTHING;"""
     execute_and_commit(query)
-    return True
 
 
 def add_subscription(username: str, amount: str, chat_id: int) -> bool:
@@ -112,3 +66,42 @@ def get_notifications():
     rows = execute_and_fetchall(query)
     Notification = namedtuple('Notification', 'username amount chat_id')
     return [Notification(*row) for row in rows]
+
+
+def username_valid(username):
+    """
+    Ensures that input username is valid (i.e. exists in database).
+
+    :param username: username of length 8 (by SUTD EVS standard)
+    :return: True if valid
+    """
+    all_usernames = [acc.username for acc in get_accounts()]
+    return username in all_usernames
+
+
+def execute_and_commit(query):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(query)
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+
+def execute_and_fetchall(query) -> list:
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute(query)
+    rows = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+    return rows
+
+
+def get_connection():
+    dbname = 'evs'
+    user = 'ubuntu'
+    conn = psycopg2.connect(f"dbname='{dbname}' user='{user}'")
+    return conn
