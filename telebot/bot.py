@@ -1,6 +1,7 @@
 from telegram.ext import Updater
 from telegram.error import BadRequest
-from conv import add_subscription as add
+from conv import (add_subscription as add,
+                  view_subscription as view)
 
 
 class Bot(object):
@@ -8,6 +9,7 @@ class Bot(object):
         self.updater = Updater(token=token, use_context=True)
         self.dispatcher = self.updater.dispatcher
         self.dispatcher.add_handler(add.conv_handler)
+        self.dispatcher.add_handler(view.conv_handler)
 
     def start(self):
         self.updater.start_polling()

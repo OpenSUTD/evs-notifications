@@ -60,11 +60,6 @@ def insert_subscription(username: str, amount: str, chat_id: int) -> bool:
 
 
 def delete_subscription_by_id(id: int) -> bool:
-    # validate id
-    all_subscription_ids = set(subscription.id for subscription in get_subscriptions())
-    if id not in all_subscription_ids:
-        return False
-
     query = f"""DELETE FROM subscription
                 WHERE id = {id};"""
     execute_and_commit(query)
