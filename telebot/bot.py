@@ -5,7 +5,7 @@ from conv import add_subscription as add
 
 class Bot(object):
     def __init__(self, token):
-        self.updater = Updater(token=token)
+        self.updater = Updater(token=token, use_context=True)
         self.dispatcher = self.updater.dispatcher
         self.dispatcher.add_handler(add.conv_handler)
 
