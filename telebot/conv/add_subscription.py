@@ -42,7 +42,7 @@ def password(update, context):
     logger.info(f'Add subscription - password: {context.chat_data["password"]}')
     username, password = itemgetter('username', 'password')(context.chat_data)
     if validate_credentials(username, password):
-        db.add_account(username, password)
+        db.insert_account(username, password)
         logger.info(f'Add subscription - account added')
         update.message.reply_text('Enter amount.')
         return States.AMOUNT
@@ -63,7 +63,7 @@ def amount(update, context):
     username = context.chat_data['username']
     chat_id = update.message.chat.id
 
-    add_successful = db.add_subscription(username, amount, chat_id)
+    add_successful = db.insert_subscription(username, amount, chat_id)
     if add_successful:
         logger.info(f'Add subscription - subscription added: ({username}, {amount}, {chat_id})')
         update.message.reply_text('Subscription added')

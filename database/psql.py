@@ -5,14 +5,21 @@ import psycopg2
 from collections import namedtuple
 
 
-def get_accounts():
+def get_accounts() -> list:
     query = """SELECT * FROM account;"""
     rows = execute_and_fetchall(query)
     Account = namedtuple('Account', 'username password')
     return [Account(*row) for row in rows]
 
 
-def get_balances_by_username(username):
+def insert_account(username: str, password: str):
+    query = f"""INSERT INTO account (username, password)
+                VALUES ('{username}', '{password}')
+                ON CONFLICT DO NOTHING;"""
+    execute_and_commit(query)
+
+
+def get_balances_by_username(username) -> list:
     if not username_valid(username):
         return []
 
@@ -33,14 +40,15 @@ def insert_balance(username, retrieve_date, amount):
     execute_and_commit(query)
 
 
-def add_account(username: str, password: str) -> bool:
-    query = f"""INSERT INTO account (username, password)
-                VALUES ('{username}', '{password}')
-                ON CONFLICT DO NOTHING;"""
-    execute_and_commit(query)
+def get_subscriptions_by_chat_id(chat_id: int) -> list:
+    query = f"""SELECT * FROM subscription
+                WHERE chat_id = {chat_id};"""
+    rows = execute_and_fetchall(query)
+    Subscription = namedtuple('Subscription', 'id username amount chat_id')
+    return [Subscription(*row) for row in rows]
 
 
-def add_subscription(username: str, amount: str, chat_id: int) -> bool:
+def insert_subscription(username: str, amount: str, chat_id: int) -> bool:
     if not username_valid(username):
         return False
 
@@ -51,7 +59,19 @@ def add_subscription(username: str, amount: str, chat_id: int) -> bool:
     return True
 
 
-def get_notifications():
+def delete_subscription_by_id(id: int) -> bool:
+    # validate id
+    all_subscription_ids = set(subscription.id for subscription in get_subscriptions())
+    if id not in all_subscription_ids:
+        return False
+
+    query = f"""DELETE FROM subscription
+                WHERE id = {id};"""
+    execute_and_commit(query)
+    return True
+
+
+def get_notifications() -> list:
     query = """SELECT balance.username, balance.amount, chat_id
                FROM subscription
                INNER JOIN (
@@ -68,40 +88,34 @@ def get_notifications():
     return [Notification(*row) for row in rows]
 
 
-def username_valid(username):
+def username_valid(username: str) -> bool:
     """
     Ensures that input username is valid (i.e. exists in database).
 
     :param username: username of length 8 (by SUTD EVS standard)
     :return: True if valid
     """
-    all_usernames = [acc.username for acc in get_accounts()]
+    all_usernames = set(acc.username for acc in get_accounts())
     return username in all_usernames
 
 
 def execute_and_commit(query):
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(query)
-    conn.commit()
-
-    cursor.close()
-    conn.close()
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+            conn.commit()
 
 
 def execute_and_fetchall(query) -> list:
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute(query)
-    rows = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
+    with get_connection() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query)
+            rows = cursor.fetchall()
     return rows
 
 
 def get_connection():
     dbname = 'evs'
     user = 'ubuntu'
-    conn = psycopg2.connect(f"dbname='{dbname}' user='{user}'")
+    conn = psycopg2.connect(dbname=dbname, user=user)
     return conn
