@@ -67,7 +67,7 @@ def delete_subscription_by_id(id: int) -> bool:
 
 
 def get_notifications() -> list:
-    query = """SELECT balance.username, balance.amount, chat_id
+    query = """SELECT DISTINCT balance.username, balance.amount, chat_id
                FROM subscription
                INNER JOIN (
                    SELECT *

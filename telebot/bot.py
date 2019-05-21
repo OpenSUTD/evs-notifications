@@ -5,9 +5,13 @@ from conv import (add_subscription as add,
 
 
 class Bot(object):
-    def __init__(self, token):
+    def __init__(self):
+        with open('token.txt', 'r') as f:
+            token = f.read().strip()
         self.updater = Updater(token=token, use_context=True)
         self.dispatcher = self.updater.dispatcher
+
+    def add_handlers(self):
         self.dispatcher.add_handler(add.conv_handler)
         self.dispatcher.add_handler(view.conv_handler)
 
