@@ -110,7 +110,8 @@ def execute_and_fetchall(query) -> list:
 
 
 def get_connection():
-    dbname = 'evs'
-    user = 'ubuntu'
-    conn = psycopg2.connect(dbname=dbname, user=user)
+    conn = psycopg2.connect(dbname='evs',
+                            user='ubuntu',
+                            password='password',
+                            host='127.0.0.1')
     return conn
