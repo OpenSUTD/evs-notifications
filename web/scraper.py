@@ -21,7 +21,3 @@ def add_all_balances():
     accounts = db.get_accounts()
     for account in accounts:
         add_account_balance(account)
-
-
-if __name__ == '__main__':
-    add_all_balances()
