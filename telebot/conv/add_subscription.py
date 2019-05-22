@@ -26,14 +26,18 @@ def validate_credentials(username, password):
 
 
 def start(update, context):
-    update.message.reply_text('Enter username to continue.')
+    update.message.reply_text('Create a new subscription to receive notifications '
+                              'when your credit balance falls below a preset amount.\n\n'
+                              'First, we will need your EVS login credentials. '
+                              'Begin by entering your username. (20000xxx)')
     return States.USERNAME
 
 
 def username(update, context):
     context.chat_data['username'] = update.message.text
     logger.info(f'Add subscription - username: {context.chat_data["username"]}')
-    update.message.reply_text('Enter password.')
+    update.message.reply_text('Now enter your password, and we will validate your credentials.\n\n'
+                              'Type /cancel at any time to leave this conversation.')
     return States.PASSWORD
 
 
@@ -44,10 +48,12 @@ def password(update, context):
     if validate_credentials(username, password):
         db.insert_account(username, password)
         logger.info(f'Add subscription - account added')
-        update.message.reply_text('Enter amount.')
+        update.message.reply_text('Finally, enter the notification amount. '
+                                  'You will receive a message when your credit balance falls below this amount.')
         return States.AMOUNT
     else:
-        update.message.reply_text('Could not login. Enter password again.')
+        update.message.reply_text(f'Could not login. Enter your password for account {username}.\n\n'
+                                  'Type /cancel at any time to leave this conversation.')
         return States.PASSWORD
 
 
@@ -66,9 +72,9 @@ def amount(update, context):
     add_successful = db.insert_subscription(username, amount, chat_id)
     if add_successful:
         logger.info(f'Add subscription - subscription added: ({username}, {amount}, {chat_id})')
-        update.message.reply_text('Subscription added')
+        update.message.reply_text(f'Your subscription has been successfully added: {username} - ${amount:.2f}')
     else:
-        update.message.reply_text('Subscription could not be added')
+        update.message.reply_text('Your subscription could not be added. Please try again later.')
     return ConversationHandler.END
 
 

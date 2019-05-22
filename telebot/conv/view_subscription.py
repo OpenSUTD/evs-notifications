@@ -18,7 +18,7 @@ class States(Enum):
 
 def get_reply_markup(chat_id):
     def button(subscription):
-        text = f'{subscription.username}: ${subscription.amount:.2f}'
+        text = f'{subscription.username} - ${subscription.amount:.2f}'
         callback_data = subscription.id
         return InlineKeyboardButton(text, callback_data=callback_data)
     cancel_button = InlineKeyboardButton('Cancel', callback_data='cancel')
@@ -32,9 +32,9 @@ def get_reply_markup(chat_id):
 def start(update, context):
     chat_id = update.message.chat.id
     reply_markup = get_reply_markup(chat_id)
-    text = ('Here are a list of your subscriptions.' 
-            ' To remove subscriptions, click on their corresponding button.' 
-            ' Press cancel to exit.')
+    text = ('Here are a list of your subscriptions. ' 
+            'To remove subscriptions, click on their corresponding button.\n\n' 
+            'Alternatively, press cancel to exit.')
     update.message.reply_text(text, reply_markup=reply_markup)
     return States.CALLBACK
 
@@ -51,8 +51,8 @@ def callback(update, context):
     logger.info(f'Delete subscription - ID: {data}')
     chat_id = update.callback_query.message.chat.id
     reply_markup = get_reply_markup(chat_id)
-    text = ('Subscription removed.'
-            ' Press cancel to exit, or continue removing available subscriptions.')
+    text = ('Your subscription has been successfully removed.\n\n'
+            "Press 'Cancel' to exit, or continue removing available subscriptions.")
     query.edit_message_text(text, reply_markup=reply_markup)
     return States.CALLBACK
 
