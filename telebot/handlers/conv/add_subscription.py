@@ -35,7 +35,7 @@ def start(update, context):
 
 def username(update, context):
     context.chat_data['username'] = update.message.text
-    logger.info(f'Add subscription - username: {context.chat_data["username"]}')
+    logger.info(f'({update.message.chat_id}) Add subscription - username: {context.chat_data["username"]}')
     update.message.reply_text('Now enter your password, and we will validate your credentials.\n\n'
                               'Type /cancel at any time to leave this conversation.')
     return States.PASSWORD
@@ -43,11 +43,11 @@ def username(update, context):
 
 def password(update, context):
     context.chat_data['password'] = update.message.text
-    logger.info(f'Add subscription - password: {context.chat_data["password"]}')
+    logger.info(f'({update.message.chat_id}) Add subscription - password: {context.chat_data["password"]}')
     username, password = itemgetter('username', 'password')(context.chat_data)
     if validate_credentials(username, password):
         db.insert_account(username, password)
-        logger.info(f'Add subscription - account added')
+        logger.info(f'({update.message.chat_id}) Add subscription - account added')
         update.message.reply_text('Finally, enter the notification amount. '
                                   'You will receive a message when your credit balance falls below this amount.')
         return States.AMOUNT
@@ -71,7 +71,8 @@ def amount(update, context):
 
     add_successful = db.insert_subscription(username, amount, chat_id)
     if add_successful:
-        logger.info(f'Add subscription - subscription added: ({username}, {amount}, {chat_id})')
+        logger.info(f'({update.message.chat_id}) Add subscription - '
+                    f'subscription added: ({username}, {amount}, {chat_id})')
         update.message.reply_text(f'Your subscription has been successfully added: {username} - ${amount:.2f}')
     else:
         update.message.reply_text('Your subscription could not be added. Please try again later.')

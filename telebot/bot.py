@@ -1,7 +1,8 @@
 from telegram.ext import Updater
 from telegram.error import BadRequest
-from conv import (add_subscription as add,
-                  view_subscription as view)
+from handlers import commands as cmd
+from handlers.conv import (add_subscription as add,
+                           view_subscription as view)
 
 
 class Bot(object):
@@ -12,6 +13,8 @@ class Bot(object):
         self.dispatcher = self.updater.dispatcher
 
     def add_handlers(self):
+        for handler in cmd.handlers:
+            self.dispatcher.add_handler(handler)
         self.dispatcher.add_handler(add.conv_handler)
         self.dispatcher.add_handler(view.conv_handler)
 
