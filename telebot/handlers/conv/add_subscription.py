@@ -2,9 +2,10 @@ import sys
 sys.path.insert(0, '..')
 
 import logging
+from telegram import ChatAction
 from telegram.ext import CommandHandler, ConversationHandler, MessageHandler, Filters
+from requests.exceptions import ConnectionError
 from enum import Enum
-from operator import itemgetter
 import database as db
 import web
 
@@ -28,7 +29,7 @@ def validate_credentials(username, password):
 def start(update, context):
     update.message.reply_text('Create a new subscription to receive notifications '
                               'when your credit balance falls below a preset amount.\n\n'
-                              'First, we will need your EVS login credentials. '
+                              'First, I will need your EVS login credentials. '
                               'Begin by entering your username. (20000xxx)')
     return States.USERNAME
 
@@ -36,18 +37,29 @@ def start(update, context):
 def username(update, context):
     context.chat_data['username'] = update.message.text
     logger.info(f'({update.message.chat_id}) Add subscription - username: {context.chat_data["username"]}')
-    update.message.reply_text('Now enter your password, and we will validate your credentials.\n\n'
+    update.message.reply_text('Now enter your password, and I will validate your credentials.\n\n'
                               'Type /cancel at any time to leave this conversation.')
     return States.PASSWORD
 
 
 def password(update, context):
-    context.chat_data['password'] = update.message.text
-    logger.info(f'({update.message.chat_id}) Add subscription - password: {context.chat_data["password"]}')
-    username, password = itemgetter('username', 'password')(context.chat_data)
-    if validate_credentials(username, password):
+    chat_id = update.message.chat_id
+    password = update.message.text
+    context.chat_data['password'] = password
+    logger.info(f'({chat_id}) Add subscription - password: {password}')
+
+    context.bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
+    username = context.chat_data['username']
+    try:
+        valid = validate_credentials(username, password)
+    except ConnectionError:
+        update.message.reply_text('Sorry, but we have faced a connection error while validating your credentials. '
+                                  'Please try again in a few minutes.')
+        return ConversationHandler.END
+
+    if valid:
         db.insert_account(username, password)
-        logger.info(f'({update.message.chat_id}) Add subscription - account added')
+        logger.info(f'({chat_id}) Add subscription - account added')
         update.message.reply_text('Finally, enter the notification amount. '
                                   'You will receive a message when your credit balance falls below this amount.')
         return States.AMOUNT
@@ -73,7 +85,8 @@ def amount(update, context):
     if add_successful:
         logger.info(f'({update.message.chat_id}) Add subscription - '
                     f'subscription added: ({username}, {amount}, {chat_id})')
-        update.message.reply_text(f'Your subscription has been successfully added: {username} - ${amount:.2f}')
+        update.message.reply_text(f'Your subscription has been successfully added: {username} - ${amount:.2f}\n\n'
+                                  f'Use /view to view and delete your subscriptions.')
     else:
         update.message.reply_text('Your subscription could not be added. Please try again later.')
     return ConversationHandler.END

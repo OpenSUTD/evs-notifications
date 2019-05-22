@@ -12,9 +12,11 @@ logger = logging.getLogger(__name__)
 
 def start(update, context):
     logger.info(f'({update.message.chat_id}) Command - start')
-    text = ('Hi! Use this bot to receive notifications when your EVS credit balance '
+    text = ('Hi! Receive notifications when your EVS credit balance '
             'falls below a specified threshold.\n\n'
-            'To begin, use the /add command to create a subscription.')
+            'To begin, use the /add command to create a subscription.\n\n'
+            'Once you have subscriptions set up, you can use /balance to '
+            'quickly check your balance here as well.')
     context.bot.send_message(chat_id=update.message.chat_id, text=text)
 
 
