@@ -34,6 +34,23 @@ def get_balances_by_username(username) -> list:
     return [(parse_date(date), amount) for date, amount in rows]
 
 
+def get_latest_balances_by_chat_id(chat_id: int) -> list:
+    query = f"""SELECT DISTINCT balance.username, balance.amount
+                FROM subscription
+                INNER JOIN (
+                    SELECT *
+                    FROM balance
+                    WHERE balance.id IN (
+                        SELECT MAX (id) FROM balance GROUP BY username
+                    )
+                ) AS balance
+                ON subscription.username = balance.username
+                    AND subscription.chat_id = {chat_id};"""
+    rows = execute_and_fetchall(query)
+    UserBalance = namedtuple('UserBalance', 'username amount')
+    return [UserBalance(*row) for row in rows]
+
+
 def insert_balance(username, retrieve_date, amount):
     query = f"""INSERT INTO balance (username, retrieve_date, amount) 
                 VALUES ('{username}', '{retrieve_date}', {amount});"""
@@ -77,7 +94,7 @@ def get_notifications() -> list:
                    )
                ) AS balance
                ON balance.username = subscription.username
-               AND balance.amount <= subscription.amount;"""
+                   AND balance.amount <= subscription.amount;"""
     rows = execute_and_fetchall(query)
     Notification = namedtuple('Notification', 'username amount chat_id')
     return [Notification(*row) for row in rows]

@@ -41,15 +41,15 @@ def start(update, context):
 
 def callback(update, context):
     query = update.callback_query
+    chat_id = query.message.chat.id
     data = query.data
     if data == 'cancel':
-        logger.info('View subscription - cancel')
+        logger.info(f'({chat_id}) View subscription - cancel')
         query.edit_message_text('Ok bye')
         return ConversationHandler.END
 
     db.delete_subscription_by_id(data)
-    logger.info(f'Delete subscription - ID: {data}')
-    chat_id = update.callback_query.message.chat.id
+    logger.info(f'({chat_id}) Delete subscription - ID: {data}')
     reply_markup = get_reply_markup(chat_id)
     text = ('Your subscription has been successfully removed.\n\n'
             "Press 'Cancel' to exit, or continue removing available subscriptions.")
