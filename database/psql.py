@@ -3,6 +3,7 @@ sys.path.insert(0, '..')
 
 import psycopg2
 from collections import namedtuple
+import web
 
 
 def get_accounts() -> list:
@@ -48,7 +49,21 @@ def get_latest_balances_by_chat_id(chat_id: int) -> list:
                     AND subscription.chat_id = {chat_id};"""
     rows = execute_and_fetchall(query)
     UserBalance = namedtuple('UserBalance', 'username amount')
-    return [UserBalance(*row) for row in rows]
+
+    if len(rows) > 0:
+        return [UserBalance(*row) for row in rows]
+
+    query = f"""SELECT DISTINCT account.username, account.password
+                FROM subscription
+                INNER JOIN account
+                ON account.username = subscription.username
+                WHERE subscription.chat_id = {chat_id};"""
+    rows = execute_and_fetchall(query)
+    amounts = []
+    for username, password in rows:
+        amount = web.get_amount(username, password)
+        amounts.append(UserBalance(username, amount))
+    return amounts
 
 
 def insert_balance(username, retrieve_date, amount):
