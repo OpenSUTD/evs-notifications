@@ -61,7 +61,7 @@ def get_latest_balances_by_chat_id(chat_id: int) -> list:
     rows = execute_and_fetchall(query)
     amounts = []
     for username, password in rows:
-        amount = web.get_amount(username, password)
+        amount = float(web.get_amount(username, password))
         amounts.append(UserBalance(username, amount))
     return amounts
 
