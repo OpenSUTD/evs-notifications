@@ -15,7 +15,7 @@ def validate():
     })
 
 
-@app.route('/credit', methods=['POST'])
+@app.route('/credit', methods=['GET'])
 def credit():
     body = request.get_json()
     username, password = itemgetter('username', 'password')(body)
