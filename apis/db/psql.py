@@ -1,6 +1,3 @@
-import sys
-sys.path.insert(0, '..')
-
 import psycopg2
 from collections import namedtuple
 
@@ -8,7 +5,7 @@ from collections import namedtuple
 def get_accounts() -> list:
     query = """SELECT * FROM account;"""
     rows = execute_and_fetchall(query)
-    Account = namedtuple('Account', 'username password')
+    Account = namedtuple('Account', 'username, password')
     return [Account(*row) for row in rows]
 
 
@@ -47,7 +44,7 @@ def get_latest_balances_by_chat_id(chat_id: int) -> list:
                 ON subscription.username = balance.username
                     AND subscription.chat_id = {chat_id};"""
     rows = execute_and_fetchall(query)
-    UserBalance = namedtuple('UserBalance', 'username amount')
+    UserBalance = namedtuple('UserBalance', 'username, amount')
     return [UserBalance(*row) for row in rows]
 
 
@@ -61,11 +58,11 @@ def get_subscriptions_by_chat_id(chat_id: int) -> list:
     query = f"""SELECT * FROM subscription
                 WHERE chat_id = {chat_id};"""
     rows = execute_and_fetchall(query)
-    Subscription = namedtuple('Subscription', 'id username amount chat_id')
+    Subscription = namedtuple('Subscription', 'id, username, amount, chat_id')
     return [Subscription(*row) for row in rows]
 
 
-def insert_subscription(username: str, amount: str, chat_id: int) -> bool:
+def insert_subscription(username: str, amount: str, chat_id: int):
     if not username_valid(username):
         return False
 
@@ -73,14 +70,12 @@ def insert_subscription(username: str, amount: str, chat_id: int) -> bool:
                 VALUES ('{username}', '{amount}', '{chat_id}')
                 ON CONFLICT DO NOTHING;"""
     execute_and_commit(query)
-    return True
 
 
-def delete_subscription_by_id(id: int) -> bool:
+def delete_subscription_by_id(id: int):
     query = f"""DELETE FROM subscription
                 WHERE id = {id};"""
     execute_and_commit(query)
-    return True
 
 
 def get_notifications() -> list:
@@ -96,7 +91,7 @@ def get_notifications() -> list:
                ON balance.username = subscription.username
                    AND balance.amount <= subscription.amount;"""
     rows = execute_and_fetchall(query)
-    Notification = namedtuple('Notification', 'username amount chat_id')
+    Notification = namedtuple('Notification', 'username, amount, chat_id')
     return [Notification(*row) for row in rows]
 
 
