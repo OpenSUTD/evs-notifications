@@ -6,7 +6,7 @@ from web import login_valid, get_amount
 app = Flask(__name__)
 
 
-@app.route('/validate', methods=['POST'])
+@app.route('/validate')
 def validate():
     body = request.get_json()
     username, password = itemgetter('username', 'password')(body)

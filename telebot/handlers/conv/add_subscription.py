@@ -1,13 +1,10 @@
-import sys
-sys.path.insert(0, '..')
-
+import json
+import requests
 import logging
 from telegram import ChatAction
 from telegram.ext import CommandHandler, ConversationHandler, MessageHandler, Filters
 from requests.exceptions import ConnectionError
 from enum import Enum
-import database as db
-import web
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -16,14 +13,6 @@ logger = logging.getLogger(__name__)
 
 class States(Enum):
     USERNAME, PASSWORD, AMOUNT = range(3)
-
-
-def validate_credentials(username, password):
-    try:
-        web.get_amount(username, password)
-    except AssertionError:
-        return False
-    return True
 
 
 def start(update, context):
@@ -58,7 +47,7 @@ def password(update, context):
         return ConversationHandler.END
 
     if valid:
-        db.insert_account(username, password)
+        insert_account(username, password)
         logger.info(f'({chat_id}) Add subscription - account added')
         update.message.reply_text('Finally, enter the notification amount. '
                                   'You will receive a message when your credit balance falls below this amount.')
@@ -81,13 +70,15 @@ def amount(update, context):
     username = context.chat_data['username']
     chat_id = update.message.chat.id
 
-    add_successful = db.insert_subscription(username, amount, chat_id)
+    add_successful = insert_subscription(username, amount, chat_id)
     if add_successful:
         logger.info(f'({update.message.chat_id}) Add subscription - '
                     f'subscription added: ({username}, {amount}, {chat_id})')
         update.message.reply_text(f'Your subscription has been successfully added: {username} - ${amount:.2f}\n\n'
                                   f'Use /view to view and delete your subscriptions.')
     else:
+        logger.info(f'({update.message.chat_id}) Add subscription - '
+                    f'subscription failed: ({username}, {amount}, {chat_id})')
         update.message.reply_text('Your subscription could not be added. Please try again later.')
     return ConversationHandler.END
 
@@ -95,6 +86,30 @@ def amount(update, context):
 def cancel(update, context):
     update.message.reply_text('Ok bye')
     return ConversationHandler.END
+
+
+def validate_credentials(username, password):
+    url = f'http://{WEB_API_HOST}:{WEB_API_PORT}/validate'
+    headers = {'Content-Type': 'application/json'}
+    data = json.dumps({'username': username, 'password': password})
+    req = requests.get(url, headers=headers, data=data)
+    response = json.loads(req.text)
+    return response['valid']
+
+
+def insert_account(username, password):
+    url = f'http://{DB_API_HOST}:{DB_API_PORT}/account'
+    headers = {'Content-Type': 'application/json'}
+    data = json.dumps({'username': username, 'password': password})
+    requests.post(url, headers=headers, data=data)
+
+
+def insert_subscription(username, amount, chat_id):
+    url = f'http://{DB_API_HOST}:{DB_API_PORT}/subscription'
+    headers = {'Content-Type': 'application/json'}
+    data = json.dumps({'username': username, 'amount': amount, 'chat_id': chat_id})
+    req = requests.post(url, headers=headers, data=data)
+    return req.text == 'Success'
 
 
 conv_handler = ConversationHandler(

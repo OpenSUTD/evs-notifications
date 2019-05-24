@@ -27,7 +27,7 @@ def get_balances_by_username(username):
 
 
 @app.route('/balance/chatid/<chat_id>')
-def get_balances_by_chat_id(chat_id):
+def get_latest_balances_by_chat_id(chat_id):
     balances = db.get_latest_balances_by_chat_id(chat_id)
     return json.dumps(balances)
 
@@ -55,7 +55,7 @@ def insert_subscription():
 
 
 @app.route('/subscription/<subscription_id>', methods=['DELETE'])
-def delete_subscription_by_subscription_id(subscription_id):
+def delete_subscription_by_id(subscription_id):
     db.delete_subscription_by_id(subscription_id)
     return 'Success'
 

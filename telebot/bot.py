@@ -2,6 +2,11 @@ from telegram.ext import Updater
 from handlers import commands as cmd
 from handlers.conv import (add_subscription as add,
                            view_subscription as view)
+import config
+
+for obj in [cmd, add, view]:
+    for name, value in config.network.items():
+        setattr(obj, name, value)
 
 
 class Bot(object):
