@@ -1,5 +1,10 @@
+import json
+import requests
 import psycopg2
 from collections import namedtuple
+
+WEB_API_HOST = 'localhost'
+WEB_API_PORT = 5000
 
 
 def get_accounts() -> list:
@@ -45,7 +50,21 @@ def get_latest_balances_by_chat_id(chat_id: int) -> list:
                     AND subscription.chat_id = {chat_id};"""
     rows = execute_and_fetchall(query)
     UserBalance = namedtuple('UserBalance', 'username, amount')
-    return [UserBalance(*row) for row in rows]
+
+    if len(rows) > 0:
+        return [UserBalance(*row) for row in rows]
+
+    query = f"""SELECT DISTINCT account.username, account.password
+                FROM subscription
+                INNER JOIN account
+                ON account.username = subscription.username
+                WHERE subscription.chat_id = {chat_id};"""
+    accounts = execute_and_fetchall(query)
+    amounts = []
+    for username, password in accounts:
+        amount = get_amount(username, password)
+        amounts.append(UserBalance(username, amount))
+    return amounts
 
 
 def insert_balance(username, retrieve_date, amount):
@@ -104,6 +123,15 @@ def username_valid(username: str) -> bool:
     """
     all_usernames = set(acc.username for acc in get_accounts())
     return username in all_usernames
+
+
+def get_amount(username, password):
+    url = f'http://{WEB_API_HOST}:{WEB_API_PORT}/credit'
+    headers = {'Content-Type': 'application/json'}
+    data = json.dumps({'username': username, 'password': password})
+    req = requests.get(url, headers=headers, data=data)
+    response = json.loads(req.text)
+    return response['amount']
 
 
 def execute_and_commit(query):
