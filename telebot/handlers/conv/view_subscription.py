@@ -1,11 +1,10 @@
-import sys
-sys.path.insert(0, '..')
-
+import json
+import requests
 import logging
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler, ConversationHandler, CallbackQueryHandler
 from enum import Enum
-import database as db
+from collections import namedtuple
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -23,7 +22,7 @@ def get_reply_markup(chat_id):
         return InlineKeyboardButton(text, callback_data=callback_data)
     cancel_button = InlineKeyboardButton('Cancel', callback_data='cancel')
 
-    subscriptions = db.get_subscriptions_by_chat_id(chat_id)
+    subscriptions = get_subscriptions_by_chat_id(chat_id)
     keyboard = [[button(subscription)] for subscription in subscriptions]
     keyboard.append([cancel_button])
     return InlineKeyboardMarkup(keyboard)
@@ -48,7 +47,7 @@ def callback(update, context):
         query.edit_message_text('Ok bye')
         return ConversationHandler.END
 
-    db.delete_subscription_by_id(data)
+    delete_subscription_by_id(data)
     logger.info(f'({chat_id}) Delete subscription - ID: {data}')
     reply_markup = get_reply_markup(chat_id)
     text = ('Your subscription has been successfully removed.\n\n'
@@ -60,6 +59,19 @@ def callback(update, context):
 def cancel(update, context):
     update.message.reply_text('Ok bye')
     return ConversationHandler.END
+
+
+def get_subscriptions_by_chat_id(chat_id):
+    url = f'http://{DB_API_HOST}:{DB_API_PORT}/subscription/{chat_id}'
+    req = requests.get(url)
+    rows = json.loads(req.text)
+    Subscription = namedtuple('Subscription', 'id, username, amount, chat_id')
+    return [Subscription(*row) for row in rows]
+
+
+def delete_subscription_by_id(subscription_id):
+    url = f'http://{DB_API_HOST}:{DB_API_PORT}/subscription/{subscription_id}'
+    requests.delete(url)
 
 
 conv_handler = ConversationHandler(
