@@ -1,15 +1,17 @@
-import sys
-sys.path.insert(0, '..')
-
+import json
+import requests
 import psycopg2
 from collections import namedtuple
 import web
+
+WEB_API_HOST = 'localhost'
+WEB_API_PORT = 5000
 
 
 def get_accounts() -> list:
     query = """SELECT * FROM account;"""
     rows = execute_and_fetchall(query)
-    Account = namedtuple('Account', 'username password')
+    Account = namedtuple('Account', 'username, password')
     return [Account(*row) for row in rows]
 
 
@@ -48,7 +50,7 @@ def get_latest_balances_by_chat_id(chat_id: int) -> list:
                 ON subscription.username = balance.username
                     AND subscription.chat_id = {chat_id};"""
     rows = execute_and_fetchall(query)
-    UserBalance = namedtuple('UserBalance', 'username amount')
+    UserBalance = namedtuple('UserBalance', 'username, amount')
 
     if len(rows) > 0:
         return [UserBalance(*row) for row in rows]
@@ -58,10 +60,10 @@ def get_latest_balances_by_chat_id(chat_id: int) -> list:
                 INNER JOIN account
                 ON account.username = subscription.username
                 WHERE subscription.chat_id = {chat_id};"""
-    rows = execute_and_fetchall(query)
+    accounts = execute_and_fetchall(query)
     amounts = []
-    for username, password in rows:
-        amount = float(web.get_amount(username, password))
+    for username, password in accounts:
+        amount = get_amount(username, password)
         amounts.append(UserBalance(username, amount))
     return amounts
 
@@ -76,11 +78,11 @@ def get_subscriptions_by_chat_id(chat_id: int) -> list:
     query = f"""SELECT * FROM subscription
                 WHERE chat_id = {chat_id};"""
     rows = execute_and_fetchall(query)
-    Subscription = namedtuple('Subscription', 'id username amount chat_id')
+    Subscription = namedtuple('Subscription', 'id, username, amount, chat_id')
     return [Subscription(*row) for row in rows]
 
 
-def insert_subscription(username: str, amount: str, chat_id: int) -> bool:
+def insert_subscription(username: str, amount: str, chat_id: int):
     if not username_valid(username):
         return False
 
@@ -88,14 +90,12 @@ def insert_subscription(username: str, amount: str, chat_id: int) -> bool:
                 VALUES ('{username}', '{amount}', '{chat_id}')
                 ON CONFLICT DO NOTHING;"""
     execute_and_commit(query)
-    return True
 
 
-def delete_subscription_by_id(id: int) -> bool:
+def delete_subscription_by_id(id: int):
     query = f"""DELETE FROM subscription
                 WHERE id = {id};"""
     execute_and_commit(query)
-    return True
 
 
 def get_notifications() -> list:
@@ -111,7 +111,7 @@ def get_notifications() -> list:
                ON balance.username = subscription.username
                    AND balance.amount <= subscription.amount;"""
     rows = execute_and_fetchall(query)
-    Notification = namedtuple('Notification', 'username amount chat_id')
+    Notification = namedtuple('Notification', 'username, amount, chat_id')
     return [Notification(*row) for row in rows]
 
 
@@ -124,6 +124,15 @@ def username_valid(username: str) -> bool:
     """
     all_usernames = set(acc.username for acc in get_accounts())
     return username in all_usernames
+
+
+def get_amount(username, password):
+    url = f'http://{WEB_API_HOST}:{WEB_API_PORT}/credit'
+    headers = {'Content-Type': 'application/json'}
+    data = json.dumps({'username': username, 'password': password})
+    req = requests.get(url, headers=headers, data=data)
+    response = json.loads(req.text)
+    return response['amount']
 
 
 def execute_and_commit(query):

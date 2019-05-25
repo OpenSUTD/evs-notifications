@@ -1,8 +1,12 @@
 from telegram.ext import Updater
-from telegram.error import BadRequest
 from handlers import commands as cmd
 from handlers.conv import (add_subscription as add,
                            view_subscription as view)
+import config
+
+for obj in [cmd, add, view]:
+    for name, value in config.network.items():
+        setattr(obj, name, value)
 
 
 class Bot(object):
@@ -21,10 +25,3 @@ class Bot(object):
     def start(self):
         self.updater.start_polling()
         self.updater.idle()
-
-    def send_message(self, user_id:int, message:int):
-        bot = self.updater.dispatcher.bot
-        try:
-            bot.send_message(chat_id=user_id, text=message)
-        except BadRequest as e:
-            print('telegram.error.BadRequest:', e.message, user_id)
