@@ -17,12 +17,12 @@ def make_text(notification):
 
 
 def notify(notification):
-    user_id = notification.chat_id
+    chat_id = notification.chat_id
     text = make_text(notification)
 
     url = f'http://{TELE_API_HOST}:{TELE_API_PORT}/message'
     headers = {'Content-Type': 'application/json'}
-    data = json.dumps({'user_id': user_id, 'text': text})
+    data = json.dumps({'chat_id': chat_id, 'text': text})
     requests.post(url, headers=headers, data=data)
 
 

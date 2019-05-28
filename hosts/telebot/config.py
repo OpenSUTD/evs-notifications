@@ -4,4 +4,7 @@ network = {
 
     'DB_API_HOST': 'localhost',
     'DB_API_PORT': 8001,
+
+    'TELE_API_HOST': 'localhost',
+    'TELE_API_PORT': 5001,
 }
