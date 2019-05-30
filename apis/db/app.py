@@ -67,7 +67,9 @@ def get_notifications():
 
 
 @app.route('/notification', methods=['POST'])
-def insert_notification(username, chat_id, message_date):
+def insert_notification():
+    body = request.get_json()
+    username, chat_id, message_date = itemgetter('username', 'chat_id', 'message_date')(body)
     db.insert_notification(username, chat_id, message_date)
     return 'Success'
 
