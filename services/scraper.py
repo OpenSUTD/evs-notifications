@@ -1,6 +1,7 @@
 import json
 import requests
 from datetime import datetime
+from collections import namedtuple
 
 WEB_API_HOST = 'localhost'
 WEB_API_PORT = 5000
@@ -17,14 +18,15 @@ def get_date():
 def get_accounts():
     url = f'http://{DB_API_HOST}:{DB_API_PORT}/account'
     req = requests.get(url)
-    accounts = json.loads(req.text)
-    return accounts
+    rows = json.loads(req.text)
+    Account = namedtuple('Account', 'username, password')
+    return [Account(*row) for row in rows]
 
 
 def get_amount(account):
     url = f'http://{WEB_API_HOST}:{WEB_API_PORT}/credit'
     headers = {'Content-Type': 'application/json'}
-    data = {'username': account.username, 'password': account.password}
+    data = json.dumps({'username': account.username, 'password': account.password})
     req = requests.get(url, headers=headers, data=data)
     amount = json.loads(req.text)['amount']
     return amount
@@ -33,7 +35,7 @@ def get_amount(account):
 def post_balance(username, date, amount):
     url = f'http://{DB_API_HOST}:{DB_API_PORT}/balance'
     headers = {'Content-Type': 'application/json'}
-    data = {'username': username, 'retrieve_date': date, 'amount': amount}
+    data = json.dumps({'username': username, 'retrieve_date': date, 'amount': amount})
     requests.post(url, headers=headers, data=data)
 
 
