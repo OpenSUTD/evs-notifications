@@ -114,6 +114,12 @@ def get_notifications() -> list:
     return [Notification(*row) for row in rows]
 
 
+def insert_notification(username: str, chat_id: int, message_date):
+    query = f"""INSERT INTO notification (username, chat_id, message_date)
+                VALUES ('{username}', {chat_id}, '{message_date}');"""
+    execute_and_commit(query)
+
+
 def username_valid(username: str) -> bool:
     """
     Ensures that input username is valid (i.e. exists in database).

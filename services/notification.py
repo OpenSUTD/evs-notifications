@@ -29,7 +29,7 @@ def notify(notification):
 def get_notifications():
     Notification = namedtuple('Notification', 'username, amount, chat_id')
 
-    url = f'http://{DB_API_HOST}:{DB_API_PORT}/notifications'
+    url = f'http://{DB_API_HOST}:{DB_API_PORT}/notification'
     req = requests.get(url)
     rows = json.loads(req.text)
     notifications = [Notification(*row) for row in rows]
