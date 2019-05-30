@@ -60,7 +60,8 @@ def get_date():
 def make_text(notification):
     username, amount = attrgetter('username', 'amount')(notification)
     return (f'Aircon notification for account {username}: '
-            f'your remaining balance is ${amount:.2f}.')
+            f'your remaining balance is ${amount:.2f}.\n\n'
+            f'You will be notified a maximum of once every 3 days.')
 
 
 if __name__ == '__main__':
