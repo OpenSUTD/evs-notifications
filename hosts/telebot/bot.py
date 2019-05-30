@@ -1,10 +1,11 @@
 from telegram.ext import Updater
 from handlers import commands as cmd
 from handlers.conv import (add_subscription as add,
-                           view_subscription as view)
+                           view_subscription as view,
+                           feedback as feedback)
 import config
 
-for obj in [cmd, add, view]:
+for obj in [cmd, add, view, feedback]:
     for name, value in config.network.items():
         setattr(obj, name, value)
 
@@ -21,6 +22,7 @@ class Bot(object):
             self.dispatcher.add_handler(handler)
         self.dispatcher.add_handler(add.conv_handler)
         self.dispatcher.add_handler(view.conv_handler)
+        self.dispatcher.add_handler(feedback.conv_handler)
 
     def start(self):
         self.updater.start_polling()
