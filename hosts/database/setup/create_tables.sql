@@ -1,24 +1,33 @@
 CREATE TABLE account (
-    username char(8) NOT NULL,
-    password char(8) NOT NULL,
+    username CHAR(8) NOT NULL,
+    password CHAR(8) NOT NULL,
     PRIMARY KEY (username)
 );
 
 CREATE TABLE balance (
-    id serial,
-    username char(8) NOT NULL,
-    retrieve_date date NOT NULL,
-    amount float(2) NOT NULL,
+    id SERIAL,
+    username CHAR(8) NOT NULL,
+    retrieve_date DATE NOT NULL,
+    amount FLOAT(2) NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (username) REFERENCES account
 );
 
 CREATE TABLE subscription (
-    id serial,
-    username char(8) NOT NULL,
-    amount float(2) NOT NULL,
-    chat_id integer NOT NULL,
+    id SERIAL,
+    username CHAR(8) NOT NULL,
+    amount FLOAT(2) NOT NULL,
+    chat_id INTEGER NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (username) REFERENCES account,
     CONSTRAINT unique_sub UNIQUE (username, amount, chat_id)
+);
+
+CREATE TABLE notification(
+    id SERIAL,
+    username CHAR(8) NOT NULL,
+    chat_id INTEGER NOT NULL,
+    message_date DATE NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (username) REFERENCES account
 );

@@ -1,3 +1,4 @@
+# docker build -t evs_postgres .
 # example Dockerfile from https://docs.docker.com/engine/examples/postgresql_service/
 # for more information on commands, visit the above website
 FROM ubuntu:16.04

@@ -60,10 +60,18 @@ def delete_subscription_by_id(subscription_id):
     return 'Success'
 
 
-@app.route('/notifications')
+@app.route('/notification', methods=['GET'])
 def get_notifications():
     notifications = db.get_notifications()
     return json.dumps(notifications)
+
+
+@app.route('/notification', methods=['POST'])
+def insert_notification():
+    body = request.get_json()
+    username, chat_id, message_date = itemgetter('username', 'chat_id', 'message_date')(body)
+    db.insert_notification(username, chat_id, message_date)
+    return 'Success'
 
 
 if __name__ == '__main__':

@@ -98,20 +98,53 @@ def delete_subscription_by_id(id: int):
 
 
 def get_notifications() -> list:
-    query = """SELECT DISTINCT balance.username, balance.amount, chat_id
-               FROM subscription
-               INNER JOIN (
-                   SELECT *
-                   FROM balance
-                   WHERE balance.id IN (
-                       SELECT MAX (id) FROM balance GROUP BY username
-                   )
-               ) AS balance
-               ON balance.username = subscription.username
-                   AND balance.amount <= subscription.amount;"""
+    query = """
+        CREATE TEMP VIEW all_notes AS (
+            SELECT DISTINCT balance.username, balance.amount, chat_id
+            FROM subscription
+            INNER JOIN (
+               SELECT *
+               FROM balance
+               WHERE balance.id IN (
+                   SELECT MAX (id) FROM balance GROUP BY username
+               )
+            ) AS balance
+            ON balance.username = subscription.username
+               AND balance.amount <= subscription.amount
+        );
+    
+        CREATE TEMP VIEW latest_notes AS (
+            SELECT *
+            FROM notification
+            WHERE notification.id IN (
+                SELECT MAX (id) FROM notification GROUP BY username, chat_id
+            )
+        );
+    
+        SELECT username, amount, chat_id
+        FROM all_notes
+        LEFT JOIN latest_notes
+        USING (username, chat_id)
+        WHERE latest_notes.message_date <= CURRENT_DATE - interval '3 days'
+        
+        UNION
+        
+        SELECT username, amount, chat_id
+        FROM all_notes
+        LEFT JOIN latest_notes
+        USING (username, chat_id)
+        WHERE latest_notes.username IS NULL AND latest_notes.chat_id IS NULL;
+
+    """
     rows = execute_and_fetchall(query)
     Notification = namedtuple('Notification', 'username, amount, chat_id')
     return [Notification(*row) for row in rows]
+
+
+def insert_notification(username: str, chat_id: int, message_date):
+    query = f"""INSERT INTO notification (username, chat_id, message_date)
+                VALUES ('{username}', {chat_id}, '{message_date}');"""
+    execute_and_commit(query)
 
 
 def username_valid(username: str) -> bool:
