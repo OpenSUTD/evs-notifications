@@ -4,7 +4,11 @@ createdb evs
 psql -d evs
 
 \i create_tables.sql
+```
 
-\COPY account FROM 'accounts.csv' DELIMITER ',' CSV;
-\COPY balance (username, retrieve_date, amount) FROM 'balances.csv' DELIMITER ',' CSV;
+## Docker
+```
+docker pull postgres:9.5
+./run.sh
+PGPASSWORD=docker psql -h localhost -U postgres -d evs
 ```
