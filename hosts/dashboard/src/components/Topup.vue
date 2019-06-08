@@ -12,6 +12,7 @@
 				</td>
 				<td class="text-xs-right">{{ props.item.estAmt }}</td>
 				<td class="text-xs-right">{{ props.item.daysSinceTopup }}</td>
+				<td class="text-xs-right">{{ props.item.estDailyAvg }}</td>
 			</template>
 		</v-data-table>
 	</div>
@@ -41,6 +42,11 @@ export default {
 					sortable: false,
 					align: 'right',
 				},
+				{
+					text: 'Estimated daily average ($)',
+					sortable: false,
+					align: 'right',
+				}
 			],
 			dateFormat: true,
 		};
@@ -51,7 +57,7 @@ export default {
 			let { dates, amounts } = separateBalanceTuples(this.balances);
 			let topups = [];
 
-			let lastTopup = null;
+			let lastTopupDate = null;
 			for (let i=1; i<amounts.length; i++) {
 				let diff = amounts[i] - amounts[i-1];
 				if (diff <= 0) continue;  // not a topup
@@ -60,15 +66,23 @@ export default {
 				let estAmt = Math.ceil(diff / 10) * 10;  // round up to nearest 10
 				
 				let daysSinceTopup = '-';
-				if (lastTopup !== null) {
-					daysSinceTopup = moment(date).diff(lastTopup, 'days');
+				if (lastTopupDate !== null) {
+					daysSinceTopup = moment(date).diff(lastTopupDate, 'days');
 				}
-				lastTopup = moment(date);
+				lastTopupDate = moment(date);
+
+				let estDailyAvg = 0;
+				if (topups.length > 0) {
+					let lastTopupAmt = topups[topups.length - 1].estAmt;
+					estDailyAvg = lastTopupAmt / daysSinceTopup;
+				}
+				estDailyAvg = estDailyAvg !== 0 ? estDailyAvg.toFixed(2) : '-';
 
 				topups.push({
 					date,
 					estAmt,
 					daysSinceTopup,
+					estDailyAvg,
 				});
 			}
 			return topups;
