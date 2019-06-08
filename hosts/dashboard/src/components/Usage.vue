@@ -54,8 +54,8 @@ export default {
 
   		let { dates, amounts } = separateBalanceTuples(balances);
   		let timeSeriesChart = usageTimeSeries('usageTimeSeries', dates, amounts);
-  		let usagePieChart = usagePie('usagePie', amounts);
-  		let usageHistChart = usageHist('usageHist', amounts);
+  		let usagePieChart = usagePie('usagePie', dates, amounts);
+  		let usageHistChart = usageHist('usageHist', dates, amounts);
 
   		this.charts = [
   			timeSeriesChart,

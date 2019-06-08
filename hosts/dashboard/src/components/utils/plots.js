@@ -1,15 +1,27 @@
 let Chart = require('chart.js');
 let moment = require('moment');
 
-function computeUsages(amounts) {
-		let usages = [];
-		for (let i=1; i<amounts.length; i++) {
-			let usage = amounts[i-1] - amounts[i];
-			if (usage < 0) continue;  // signifies a top-up
-			usage = Math.round(usage * 100) / 100;  // round to 2 d.p.
-			usages.push(usage);
-		}
-		return usages;
+function dayDiff(earlierDate, laterDate) {
+	let earlier = moment(earlierDate);
+	let later = moment(laterDate);
+	return later.diff(earlier, 'days');
+}
+
+function computeUsages(dates, amounts) {
+	let usages = [];
+	for (let i=1; i<amounts.length; i++) {
+		let prevDate = dates[i-1];
+		let currDate = dates[i];
+		let diff = dayDiff(prevDate, currDate);
+		if (diff != 1) continue;  // do not count during lapse in records
+
+		let usage = amounts[i-1] - amounts[i];
+		if (usage < 0) continue;  // signifies a top-up
+
+		usage = Math.round(usage * 100) / 100;  // round to 2 d.p.
+		usages.push(usage);
+	}
+	return usages;
 }
 
 function timeSeriesOptions(title, label, timeUnit) {
@@ -81,7 +93,7 @@ module.exports = {
 	},
 
 	usageTimeSeries: (elementId, dates, amounts) => {
-		let usages = computeUsages(amounts);
+		let usages = computeUsages(dates, amounts);
 
 		let title = 'Usage history';
 		let label = 'Usage amount ($)';
@@ -104,13 +116,13 @@ module.exports = {
 		return timeSeries;
 	},
 
-	usagePie: (elementId, amounts) => {
+	usagePie: (elementId, dates, amounts) => {
+		let usages = computeUsages(dates, amounts);
 		let used = 0;
-		for (let i=1; i<amounts.length; i++) {
-			if (amounts[i] !== amounts[i-1]) used++;
+		for (let i=0; i<usages.length; i++) {
+			if (usages[i] > 0) used++;
 		}
-		let N = amounts.length - 1;
-		let counts = [used, N - used];
+		let counts = [used, usages.length - used];
 
 		let ctx = document.getElementById(elementId).getContext('2d');
 		let data = {
@@ -135,8 +147,8 @@ module.exports = {
 		return usagePie;
 	},
 
-	usageHist: (elementId, amounts) => {
-		let usages = computeUsages(amounts);
+	usageHist: (elementId, dates, amounts) => {
+		let usages = computeUsages(dates, amounts);
 
 		let nbins = 10;
 		let binCounts = Array(nbins+1).fill(0);  // bins are multiples of 0.1
