@@ -1,34 +1,34 @@
 <template>
-	<div id="usage">
-		<v-btn-toggle mandatory id="toggleDates">
-			<v-btn flat @click="plotAll()">All</v-btn>
-			<v-btn flat @click="plotMonth()">Past Month</v-btn>
-			<v-btn flat @click="plotWeek()">Past Week</v-btn>
-		</v-btn-toggle>
+  <div id="usage">
+    <v-btn-toggle mandatory id="toggleDates">
+      <v-btn flat @click="plotAll()">All</v-btn>
+      <v-btn flat @click="plotMonth()">Past Month</v-btn>
+      <v-btn flat @click="plotWeek()">Past Week</v-btn>
+    </v-btn-toggle>
 
-		<v-container grid-list-md>
-	    <v-layout row>
-	    	<v-flex xs12>
-		    	<v-container elevation-2 class="chartContainer">
-						<canvas id="usageTimeSeries" />
-		    	</v-container>
-		    </v-flex>
-	    </v-layout>
+    <v-container grid-list-md>
+      <v-layout row>
+        <v-flex xs12>
+          <v-container elevation-2 class="chartContainer">
+            <canvas id="usageTimeSeries" />
+          </v-container>
+        </v-flex>
+      </v-layout>
 
-	    <v-layout row>
-	      <v-flex xs8>
-	      	<v-container elevation-2 class="chartContainer">
-	    			<canvas id="usageHist"></canvas>
-					</v-container>
-	      </v-flex>
-	      <v-flex xs4>
-	      	<v-container elevation-2 class="chartContainer">
-						<canvas id="usagePie"></canvas>
-					</v-container>
-	      </v-flex>
-	    </v-layout>
-	  </v-container>
-	</div>
+      <v-layout row>
+        <v-flex xs8>
+          <v-container elevation-2 class="chartContainer">
+            <canvas id="usageHist"></canvas>
+          </v-container>
+        </v-flex>
+        <v-flex xs4>
+          <v-container elevation-2 class="chartContainer">
+            <canvas id="usagePie"></canvas>
+          </v-container>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </div>
 </template>
 
 <script>
@@ -43,26 +43,26 @@ export default {
   name: 'Usage',
   props: ['balances'],
   data() {
-  	return {
-  		charts: [],
-  	};
+    return {
+      charts: [],
+    };
   },
 
   methods: {
-  	plot(balances) {
-  		this.destroyExistingCharts();
+    plot(balances) {
+      this.destroyExistingCharts();
 
-  		let { dates, amounts } = separateBalanceTuples(balances);
-  		let timeSeriesChart = usageTimeSeries('usageTimeSeries', dates, amounts);
-  		let usagePieChart = usagePie('usagePie', dates, amounts);
-  		let usageHistChart = usageHist('usageHist', dates, amounts);
+      let { dates, amounts } = separateBalanceTuples(balances);
+      let timeSeriesChart = usageTimeSeries('usageTimeSeries', dates, amounts);
+      let usagePieChart = usagePie('usagePie', dates, amounts);
+      let usageHistChart = usageHist('usageHist', dates, amounts);
 
-  		this.charts = [
-  			timeSeriesChart,
-  			usagePieChart,
-  			usageHistChart,
-  		];
-  	},
+      this.charts = [
+        timeSeriesChart,
+        usagePieChart,
+        usageHistChart,
+      ];
+    },
 
     plotAll() {
       this.plot(this.balances);
@@ -100,12 +100,12 @@ export default {
 
 <style scoped>
 #usage {
-	height: 100%;
-	margin: auto;
-  margin-top: 60px;
+  height: 100%;
+  margin: auto;
+  padding-top: 60px;
 }
 
 .chartContainer {
-	height: 100%;
+  height: 100%;
 }
 </style>

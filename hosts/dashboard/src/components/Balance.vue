@@ -1,60 +1,60 @@
 <template>
-	<div id="balance">
-		<v-btn-toggle mandatory id="toggleDates">
-			<v-btn flat @click="plotAll()">All</v-btn>
-			<v-btn flat @click="plotMonth()">Past Month</v-btn>
-			<v-btn flat @click="plotWeek()">Past Week</v-btn>
-		</v-btn-toggle>
+  <div id="balance">
+    <v-btn-toggle mandatory id="toggleDates">
+      <v-btn flat @click="plotAll()">All</v-btn>
+      <v-btn flat @click="plotMonth()">Past Month</v-btn>
+      <v-btn flat @click="plotWeek()">Past Week</v-btn>
+    </v-btn-toggle>
 
-		<v-container grid-list-md>
-			<v-layout row>
-				<v-flex xs12>
-					<v-container elevation-2 class="chartContainer">
-						<canvas id="balanceTimeSeries" />
-					</v-container>
-				</v-flex>
-			</v-layout>
-		</v-container>
-	</div>
+    <v-container grid-list-md>
+      <v-layout row>
+        <v-flex xs12>
+          <v-container elevation-2 class="chartContainer">
+            <canvas id="balanceTimeSeries" />
+          </v-container>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </div>
 </template>
 
 <script>
 import {
-	getPastWeekBalances,
-	getPastMonthBalances,
-	separateBalanceTuples,
+  getPastWeekBalances,
+  getPastMonthBalances,
+  separateBalanceTuples,
 } from './utils/data.js';
 import { balanceTimeSeries } from './utils/plots.js';
 
 export default {
-	name: 'Balance',
-	props: ['balances'],
-	data() {
-		return {
-			charts: [],
-		};
-	},
+  name: 'Balance',
+  props: ['balances'],
+  data() {
+    return {
+      charts: [],
+    };
+  },
 
-	methods: {
-		plot(balances) {
-			this.destroyExistingCharts();
+  methods: {
+    plot(balances) {
+      this.destroyExistingCharts();
 
-			let { dates, amounts } = separateBalanceTuples(balances);
-			let timeSeriesChart = balanceTimeSeries('balanceTimeSeries', dates, amounts);
-			this.charts = [timeSeriesChart];
-		},
+      let { dates, amounts } = separateBalanceTuples(balances);
+      let timeSeriesChart = balanceTimeSeries('balanceTimeSeries', dates, amounts);
+      this.charts = [timeSeriesChart];
+    },
 
-		plotAll() {
-  		this.plot(this.balances);
-  	},
-  	plotMonth() {
-  		let filteredBalances = getPastMonthBalances(this.balances);
-  		this.plot(filteredBalances);
-  	},
-  	plotWeek() {
-  		let filteredBalances = getPastWeekBalances(this.balances);
-  		this.plot(filteredBalances);
-  	},
+    plotAll() {
+      this.plot(this.balances);
+    },
+    plotMonth() {
+      let filteredBalances = getPastMonthBalances(this.balances);
+      this.plot(filteredBalances);
+    },
+    plotWeek() {
+      let filteredBalances = getPastWeekBalances(this.balances);
+      this.plot(filteredBalances);
+    },
 
     destroyExistingCharts() {
       // remove existing charts, otherwise new charts will simply overlap
@@ -80,13 +80,12 @@ export default {
 
 <style scoped>
 #balance {
-	height: 100%;
-	width: 100%;
-	margin: auto;
-	margin-top: 60px;
+  height: 100%;
+  width: 100%;
+  padding-top: 60px;
 }
 
 .chartContainer {
-	height: 100%;
+  height: 100%;
 }
 </style>
