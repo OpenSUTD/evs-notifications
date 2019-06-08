@@ -67,7 +67,7 @@ export default {
   },
 
   created() {
-    let serverHost = 'http://54.169.193.254:8000';
+    let serverHost = 'http://13.251.125.232:8000';
     let accountId = '20000173';
     let url = `${serverHost}/balance/${accountId}`;
     fetch(url)
