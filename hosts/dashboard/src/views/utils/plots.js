@@ -8,6 +8,7 @@ function dayDiff(earlierDate, laterDate) {
 }
 
 function computeUsages(dates, amounts) {
+	let filteredDates = [];
 	let usages = [];
 	for (let i=1; i<amounts.length; i++) {
 		let prevDate = dates[i-1];
@@ -20,8 +21,12 @@ function computeUsages(dates, amounts) {
 
 		usage = Math.round(usage * 100) / 100;  // round to 2 d.p.
 		usages.push(usage);
+		filteredDates.push(dates[i]);
 	}
-	return usages;
+	return {
+		filteredDates,
+		usages,
+	};
 }
 
 function timeSeriesOptions(title, label, timeUnit) {
@@ -93,7 +98,7 @@ module.exports = {
 	},
 
 	usageTimeSeries: (elementId, dates, amounts) => {
-		let usages = computeUsages(dates, amounts);
+		let { filteredDates, usages } = computeUsages(dates, amounts);
 
 		let title = 'Usage history';
 		let label = 'Usage amount ($)';
@@ -101,7 +106,7 @@ module.exports = {
 
 		let ctx = document.getElementById(elementId).getContext('2d');
 		let data = {
-			labels: dates,
+			labels: filteredDates,
 			datasets: [{
 				data: usages,
 				backgroundColor: 'rgba(54, 162, 235, 0.3)',
@@ -117,7 +122,7 @@ module.exports = {
 	},
 
 	usagePie: (elementId, dates, amounts) => {
-		let usages = computeUsages(dates, amounts);
+		let { filteredDates, usages } = computeUsages(dates, amounts);
 		let used = 0;
 		for (let i=0; i<usages.length; i++) {
 			if (usages[i] > 0) used++;
@@ -148,7 +153,7 @@ module.exports = {
 	},
 
 	usageHist: (elementId, dates, amounts) => {
-		let usages = computeUsages(dates, amounts);
+		let { filteredDates, usages } = computeUsages(dates, amounts);
 
 		let nbins = 10;
 		let binCounts = Array(nbins+1).fill(0);  // bins are multiples of 0.1
