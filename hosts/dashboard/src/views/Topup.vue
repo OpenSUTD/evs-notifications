@@ -19,12 +19,12 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import moment from 'moment';
 import { separateBalanceTuples } from './utils/data.js';
 
 export default {
   name: 'Topup',
-  props: ['balances'],
   data() {
     return {
       headers: [
@@ -53,6 +53,7 @@ export default {
   },
 
   computed: {
+    ...mapState(['balances']),
     topups: function() {
       let { dates, amounts } = separateBalanceTuples(this.balances);
       let topups = [];

@@ -9,11 +9,15 @@ export default new Vuex.Store({
     authenticated: false,
   },
 
+  getters: {
+    authenticated: state => state.authenticated,
+  },
+
   actions: {
     login({ commit }, { username, password }) {
       let serverHost = 'http://13.251.125.232:8000';
       let url = `${serverHost}/balance/${username}`;
-      fetch(url)
+      return fetch(url)
       .then(response => response.json())
       .then(json => { commit('loginSuccess', json) })
       .then(() => { console.log('fetch', url) });

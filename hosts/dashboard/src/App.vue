@@ -1,13 +1,24 @@
 <template>
   <v-app id="app">
-    <router-view/>
+    <NavigationDrawer v-if="showNav"/>
+    <router-view />
   </v-app>
 </template>
 
 <script>
+import NavigationDrawer from '@/components/NavigationDrawer.vue';
+
 export default {
   name: 'app',
-}
+  components: {
+    NavigationDrawer,
+  },
+  computed: {
+    showNav() {
+      return this.$route.path !== '/login';
+    },
+  },
+};
 </script>
 
 <style>
@@ -24,5 +35,10 @@ html, body {
   color: #2c3e50;
 
   height: 100%;
+}
+
+.application--wrap {
+  display: flex;
+  flex-direction: row;
 }
 </style>

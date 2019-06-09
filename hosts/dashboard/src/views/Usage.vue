@@ -1,5 +1,5 @@
 <template>
-  <div id="balance">
+  <div id="usage">
     <v-btn-toggle mandatory id="toggleDates">
       <v-btn flat @click="plotAll()">All</v-btn>
       <v-btn flat @click="plotMonth()">Past Month</v-btn>
@@ -10,7 +10,20 @@
       <v-layout row>
         <v-flex xs12>
           <v-container elevation-2 class="chartContainer">
-            <canvas id="balanceTimeSeries" />
+            <canvas id="usageTimeSeries" />
+          </v-container>
+        </v-flex>
+      </v-layout>
+
+      <v-layout row>
+        <v-flex xs8>
+          <v-container elevation-2 class="chartContainer">
+            <canvas id="usageHist"></canvas>
+          </v-container>
+        </v-flex>
+        <v-flex xs4>
+          <v-container elevation-2 class="chartContainer">
+            <canvas id="usagePie"></canvas>
           </v-container>
         </v-flex>
       </v-layout>
@@ -19,20 +32,23 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import {
   getPastWeekBalances,
   getPastMonthBalances,
   separateBalanceTuples,
 } from './utils/data.js';
-import { balanceTimeSeries } from './utils/plots.js';
+import { usageTimeSeries, usagePie, usageHist } from './utils/plots.js';
 
 export default {
-  name: 'Balance',
-  props: ['balances'],
+  name: 'Usage',
   data() {
     return {
       charts: [],
     };
+  },
+  computed: {
+    ...mapState(['balances']),
   },
 
   methods: {
@@ -40,8 +56,15 @@ export default {
       this.destroyExistingCharts();
 
       let { dates, amounts } = separateBalanceTuples(balances);
-      let timeSeriesChart = balanceTimeSeries('balanceTimeSeries', dates, amounts);
-      this.charts = [timeSeriesChart];
+      let timeSeriesChart = usageTimeSeries('usageTimeSeries', dates, amounts);
+      let usagePieChart = usagePie('usagePie', dates, amounts);
+      let usageHistChart = usageHist('usageHist', dates, amounts);
+
+      this.charts = [
+        timeSeriesChart,
+        usagePieChart,
+        usageHistChart,
+      ];
     },
 
     plotAll() {
@@ -55,7 +78,7 @@ export default {
       let filteredBalances = getPastWeekBalances(this.balances);
       this.plot(filteredBalances);
     },
-
+    
     destroyExistingCharts() {
       // remove existing charts, otherwise new charts will simply overlap
       for (let chart of this.charts) chart.destroy();
@@ -64,24 +87,22 @@ export default {
 
   mounted() {
     // necessary to allow re-plotting when re-navigated to
-    // from navigation drawer
     if (this.balances) this.plotAll();
   },
 
   watch: {
-    balances: function(newBalances, oldBalances) {
+    balances: function() {
       // plot when updated with data from async fetch
-      this.balances = newBalances;
       this.plotAll();
     },
   },
-};
+}
 </script>
 
 <style scoped>
-#balance {
+#usage {
   height: 100%;
-  width: 100%;
+  margin: auto;
   padding-top: 60px;
 }
 
