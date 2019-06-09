@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import NavigationDrawer from '@/components/NavigationDrawer.vue';
 import Balance from '@/components/Balance.vue';
 import Usage from '@/components/Usage.vue';
@@ -60,20 +61,22 @@ export default {
 
   data() {
     return {
-      balances: null,
       display: flags.balance,
       flags,
       pages,
     };
   },
 
+  computed: {
+    ...mapState(['balances']),
+  },
+
   created() {
-    let serverHost = 'http://13.251.125.232:8000';
-    let accountId = '20000173';
-    let url = `${serverHost}/balance/${accountId}`;
-    fetch(url)
-    .then(response => response.json())
-    .then(json => { this.balances = json });
+    let account = {
+      username: '20000173',
+      password: null,
+    };
+    this.$store.dispatch('login', account);
   }
 };
 </script>
