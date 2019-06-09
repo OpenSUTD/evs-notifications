@@ -16,11 +16,17 @@ export default new Vuex.Store({
   actions: {
     login({ commit }, { username, password }) {
       let serverHost = 'http://13.251.125.232:8000';
-      let url = `${serverHost}/balance/${username}`;
-      return fetch(url)
-      .then(response => response.json())
-      .then(json => { commit('loginSuccess', json) })
-      .then(() => { console.log('fetch', url) });
+      let url = `${serverHost}/balance`;
+
+      let headers = { 'Content-Type': 'application/json' };
+      let body = JSON.stringify({ username, password });
+
+      return fetch(url, { method: 'POST', headers, body })
+      .then(response => {
+        if (response.ok) return response.json();
+        else throw new Error();
+      })
+      .then(json => { commit('loginSuccess', json) });
     },
     logout({ commit }) {
       commit('logout');
