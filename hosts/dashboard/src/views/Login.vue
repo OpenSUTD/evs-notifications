@@ -7,18 +7,22 @@
 				name="username"
 				label="Username"
 				placeholder="20000xxx"
-				type="text" />
+				type="text"
+				autocomplete="username"
+				autofocus />
 			<v-text-field
 				v-model="password"
 				prepend-icon="lock"
 				name="password"
 				label="Password"
-				type="password" />
+				type="password"
+				autocomplete="current-password" />
+
 			<v-btn @click="login">Login</v-btn>
+			<p v-if="failed" class="mt-2 red--text">
+				Login failed. Please try again.
+			</p>
 		</v-form>
-		<p v-if="failed" class="mt-2 red--text">
-			Login failed. Please try again.
-		</p>
 	</div>
 </template>
 
@@ -52,8 +56,6 @@ export default {
 
 <style scoped>
 #login {
-	height: 100%;
 	margin: auto;
-	padding-top: 60px;
 }
 </style>

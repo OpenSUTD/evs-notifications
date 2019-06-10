@@ -1,5 +1,7 @@
 <template>
   <div id="usage">
+    <h1 class="mb-3">Usage</h1>
+
     <v-btn-toggle mandatory id="toggleDates">
       <v-btn flat @click="plotAll()">All</v-btn>
       <v-btn flat @click="plotMonth()">Past Month</v-btn>
@@ -102,11 +104,13 @@ export default {
 <style scoped>
 #usage {
   height: 100%;
+  width: 70%;
   margin: auto;
   padding-top: 60px;
 }
 
 .chartContainer {
   height: 100%;
+  background-color: white;
 }
 </style>

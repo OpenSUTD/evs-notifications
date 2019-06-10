@@ -1,6 +1,6 @@
 <template>
   <div id="topup">
-    <h1>Topup</h1>
+    <h1 class="mb-3">Topup</h1>
 
     <v-data-table id="table" class="elevation-1"
       :headers="headers"
@@ -101,11 +101,8 @@ export default {
 <style scoped>
 #topup {
   height: 100%;
+  width: 70%;
   margin: auto;
   padding-top: 60px;
-}
-
-#table {
-  margin: 16px 0px;
 }
 </style>
