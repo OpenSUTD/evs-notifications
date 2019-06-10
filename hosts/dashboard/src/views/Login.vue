@@ -18,7 +18,14 @@
 				type="password"
 				autocomplete="current-password" />
 
-			<v-btn @click="login">Login</v-btn>
+			<v-btn @click="login">
+				Login
+				<v-progress-circular indeterminate
+					v-if="loading"
+					class="ml-2"
+					size="16"
+					width="1" />
+			</v-btn>
 			<p v-if="failed" class="mt-2 red--text">
 				Login failed. Please try again.
 			</p>
@@ -35,11 +42,14 @@ export default {
 		return {
 			username: '',
 			password: '',
+			loading: false,
 			failed: false,
 		};
 	},
 	methods: {
 		login() {
+			this.loading = true;
+
 			let account = {
 				username: this.username,
 				password: this.password,
@@ -50,12 +60,16 @@ export default {
 			.catch(() => {
 				this.failed = true;
 				this.password = '';
-			});
+			})
+			.finally(() => { this.loading = false });
 		},
 
 		demo() {
+			this.loading = true;
+
 			this.$store.dispatch('demo')
-			.then(() => { this.$router.push('/balance') });
+			.then(() => { this.$router.push('/balance') })
+			.finally(() => { this.loading = false });
 		}
 	},
 };
