@@ -1,5 +1,8 @@
 <template>
-	<v-navigation-drawer>
+  <v-navigation-drawer
+    :mini-variant="mini"
+    permanent
+    touchless>
     <v-toolbar flat>
       <v-list>
         <v-list-tile>
@@ -70,6 +73,13 @@ export default {
     return {
       pages,
     };
+  },
+
+  computed: {
+    mini() {
+      let isMobile = this.$vuetify.breakpoint.smAndDown;
+      return isMobile;
+    },
   },
 
   methods: {

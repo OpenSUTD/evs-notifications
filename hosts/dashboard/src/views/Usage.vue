@@ -17,7 +17,7 @@
         </v-flex>
       </v-layout>
 
-      <v-layout row>
+      <v-layout row v-bind="binding">
         <v-flex xs8>
           <v-container elevation-2 class="chartContainer">
             <canvas id="usageHist"></canvas>
@@ -51,6 +51,11 @@ export default {
   },
   computed: {
     ...mapState(['balances']),
+    binding() {
+      let binding = {};
+      if (this.$vuetify.breakpoint.xs) binding.column = true;
+      return binding;
+    }
   },
 
   methods: {
@@ -95,6 +100,9 @@ export default {
   watch: {
     balances: function() {
       // plot when updated with data from async fetch
+      this.plotAll();
+    },
+    binding: function() {
       this.plotAll();
     },
   },
