@@ -3,6 +3,8 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
+const serverHost = 'http://13.251.125.232:8000';
+
 export default new Vuex.Store({
   state: {
     balances: null,
@@ -15,7 +17,6 @@ export default new Vuex.Store({
 
   actions: {
     login({ commit }, { username, password }) {
-      let serverHost = 'http://13.251.125.232:8000';
       let url = `${serverHost}/balance`;
 
       let headers = { 'Content-Type': 'application/json' };
@@ -30,6 +31,13 @@ export default new Vuex.Store({
     },
     logout({ commit }) {
       commit('logout');
+    },
+
+    demo({ commit }) {
+      let url = `${serverHost}/balance/demo`;
+      return fetch(url)
+      .then(response => response.json())
+      .then(json => { commit('loginSuccess', json) });
     },
   },
 

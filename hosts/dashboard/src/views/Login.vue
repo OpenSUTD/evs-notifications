@@ -23,6 +23,8 @@
 				Login failed. Please try again.
 			</p>
 		</v-form>
+
+		<v-btn flat outline class="ma-4" @click="demo">Demo</v-btn>
 	</div>
 </template>
 
@@ -38,18 +40,23 @@ export default {
 	},
 	methods: {
 		login() {
-	    let account = {
-	      username: this.username,
-	      password: this.password,
-	    };
+			let account = {
+				username: this.username,
+				password: this.password,
+			};
 
-	    this.$store.dispatch('login', account)
-	    .then(() => { this.$router.push('/balance') })
-	    .catch(() => {
-	    	this.failed = true;
-	    	this.password = '';
-	    });
+			this.$store.dispatch('login', account)
+			.then(() => { this.$router.push('/balance') })
+			.catch(() => {
+				this.failed = true;
+				this.password = '';
+			});
 		},
+
+		demo() {
+			this.$store.dispatch('demo')
+			.then(() => { this.$router.push('/balance') });
+		}
 	},
 };
 </script>

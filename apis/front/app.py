@@ -28,5 +28,12 @@ def get_balances():
     return r.text
 
 
+@app.route('/balance/demo')
+def get_demo_balances():
+    url = f'http://{DB_API_HOST}:{DB_API_PORT}/balance/username/20000173'
+    r = requests.get(url)
+    return r.text
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)
