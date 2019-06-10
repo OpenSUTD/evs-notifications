@@ -9,6 +9,11 @@ import store from '../store';
 
 Vue.use(Router);
 
+function requireDeauth(to, from, next) {
+	if (!store.getters.authenticated) next();
+	else next(from.path);
+}
+
 function requireAuth(to, from, next) {
 	if (store.getters.authenticated) next();
 	else next('/login');
@@ -20,6 +25,7 @@ const router = new Router({
 			path: '/login',
 			name: 'Login',
 			component: Login,
+			beforeEnter: requireDeauth,
 		},
 		{
 			path: '/balance',
