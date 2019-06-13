@@ -19,8 +19,14 @@ def validate():
 def credit():
     body = request.get_json()
     username, password = itemgetter('username', 'password')(body)
+
+    try:
+        amount = get_amount(username, password)
+    except AssertionError:
+        return f'Error on account: {username}', 404
+
     return json.dumps({
-        'amount': get_amount(username, password)
+        'amount': amount
     })
 
 
