@@ -1,3 +1,4 @@
+import logging
 import json
 import requests
 from flask import Flask, request
@@ -7,6 +8,10 @@ from operator import itemgetter
 DB_API_HOST = 'localhost'
 DB_API_PORT = 8001
 
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__)
 CORS(app)
 
@@ -15,6 +20,7 @@ CORS(app)
 def get_balances():
     body = request.get_json()
     username, password = itemgetter('username', 'password')(body)
+    logger.info(f'({username}, {password})')
 
     url = f'http://{DB_API_HOST}:{DB_API_PORT}/account'
     r = requests.get(url)
@@ -30,6 +36,8 @@ def get_balances():
 
 @app.route('/balance/demo')
 def get_demo_balances():
+    logger.info('Demo')
+
     url = f'http://{DB_API_HOST}:{DB_API_PORT}/balance/username/20000173'
     r = requests.get(url)
     return r.text
