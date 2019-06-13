@@ -31,3 +31,13 @@ CREATE TABLE notification(
     PRIMARY KEY (id),
     FOREIGN KEY (username) REFERENCES account
 );
+
+CREATE VIEW ordered_balances AS (
+    SELECT * FROM balance ORDER BY id DESC
+);
+
+CREATE VIEW num_users AS (
+    SELECT num_acc, num_sub
+    FROM (SELECT COUNT(*) AS num_acc FROM account) AS a,
+        (SELECT COUNT(*) AS num_sub FROM subscription) AS s
+);
