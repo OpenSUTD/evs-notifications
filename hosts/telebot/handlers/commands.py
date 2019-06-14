@@ -34,6 +34,13 @@ def balance(update, context):
         context.bot.send_message(chat_id=chat_id, text=text)
 
 
+def dashboard(update, context):
+    logger.info(f'{update.message.chat_id}) Command - dashboard')
+    text = ('View some dashboard analytics for your aircon usage: '
+            'https://open.sutd.dev/evs-notifications')
+    context.bot.send_message(chat_id=update.message.chat_id, text=text)
+
+
 def security(update, context):
     logger.info(f'({update.message.chat_id}) Command - security')
     text = ('Your credentials are being stored in plaintext. '
@@ -53,5 +60,6 @@ def get_latest_balances_by_chat_id(chat_id):
 handlers = [
     CommandHandler('start', start),
     CommandHandler('balance', balance),
+    CommandHandler('dashboard', dashboard),
     CommandHandler('security', security),
 ]
