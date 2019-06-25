@@ -1,6 +1,6 @@
 import json
 import unittest
-from web import get_amount
+from web.balance import get_amount
 
 
 def read_credentials(filename='tests/credentials.json'):

@@ -1,5 +1,5 @@
 import unittest
-from web import get_balance_from_text
+from web.balance import get_balance_from_text
 
 
 class TestGetBalance(unittest.TestCase):

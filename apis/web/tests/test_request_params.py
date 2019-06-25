@@ -1,5 +1,5 @@
 import unittest
-from web import get_request_params
+from web.utils import get_request_params
 
 
 class TestRequestParams(unittest.TestCase):

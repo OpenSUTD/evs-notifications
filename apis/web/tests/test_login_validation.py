@@ -1,6 +1,6 @@
 import json
 import unittest
-from web import login_valid
+from web.login import login_valid
 
 
 def read_credentials(filename='tests/credentials.json'):
