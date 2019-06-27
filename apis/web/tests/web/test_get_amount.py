@@ -3,17 +3,16 @@ import unittest
 from web.balance import get_amount
 
 
-def read_credentials(filename='tests/credentials.json'):
-    with open(filename) as f:
-        text = f.read()
-    obj = json.loads(text)
-    return obj['username'], obj['password']
-
-
 class TestGetAmount(unittest.TestCase):
+    def setUp(self):
+        with open('tests/credentials.json') as f:
+            text = f.read()
+        obj = json.loads(text)
+        self.username = obj['username']
+        self.password = obj['password']
+
     def test_successful_login(self):
-        username, password = read_credentials()
-        amount = get_amount(username, password)
+        amount = get_amount(self.username, self.password)
         self.assertEqual(type(amount), float)
 
     def test_unsuccessful_login(self):

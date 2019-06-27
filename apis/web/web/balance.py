@@ -9,11 +9,9 @@ def get_amount(username, password):
 
         # store login cookies in session
         r = sess.post(url=login_url, data=data, headers=headers)
-        assert r.status_code == 200, 'Could not login'
+        assert 'Invalid' not in r.url, 'Wrong login credentials'
 
         r = sess.get(credit_url)
-        assert r.status_code == 200, 'Could not retrieve credit page'
-
         amount = get_balance_from_text(r.text)
     return amount
 

@@ -4,14 +4,14 @@ from bs4 import BeautifulSoup
 from web.transaction import Transaction, get_transactions, row_to_transaction, transaction_to_dict
 
 
-def read_credentials(filename='tests/credentials.json'):
-    with open(filename) as f:
-        text = f.read()
-    obj = json.loads(text)
-    return obj['username'], obj['password']
-
-
 class TestGetTransactions(unittest.TestCase):
+    def setUp(self):
+        with open('tests/credentials.json') as f:
+            text = f.read()
+        obj = json.loads(text)
+        self.username = obj['username']
+        self.password = obj['password']
+
     def test_row_to_transaction(self):
         data = ('<tr>'
                 '  <td>transaction_id</td>'
@@ -41,13 +41,11 @@ class TestGetTransactions(unittest.TestCase):
         self.assertEqual(result, {'date': '2019-01-01', 'amount': 10})
 
     def test_get_transactions(self):
-        username, password = read_credentials()
-        transactions = get_transactions(username, password)
+        transactions = get_transactions(self.username, self.password)
         self.assertEqual(type(transactions), list)
 
     def test_get_transactions_attributes(self):
-        username, password = read_credentials()
-        transactions = get_transactions(username, password)
+        transactions = get_transactions(self.username, self.password)
         for txn in transactions:
             self.assertEqual(type(txn), dict)
 

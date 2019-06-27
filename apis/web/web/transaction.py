@@ -21,11 +21,9 @@ def get_transactions(username: str, password: str) -> list:
 
         # store login cookies in session
         r = sess.post(url=login_url, data=data, headers=headers)
-        assert r.status_code == 200, 'Could not login'
+        assert 'Invalid' not in r.url, 'Wrong login credentials'
 
         r = sess.get(transaction_url)
-        assert r.status_code == 200, 'Could not retrieve transaction page'
-
         html_text = r.text
     return get_transactions_from_html_page(html_text)
 

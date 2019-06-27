@@ -3,17 +3,16 @@ import unittest
 from web.login import login_valid
 
 
-def read_credentials(filename='tests/credentials.json'):
-    with open(filename) as f:
-        text = f.read()
-    obj = json.loads(text)
-    return obj['username'], obj['password']
-
-
 class TestLoginValid(unittest.TestCase):
+    def setUp(self):
+        with open('tests/credentials.json') as f:
+            text = f.read()
+        obj = json.loads(text)
+        self.username = obj['username']
+        self.password = obj['password']
+
     def test_login_is_valid(self):
-        username, password = read_credentials()
-        result = login_valid(username, password)
+        result = login_valid(self.username, self.password)
         self.assertTrue(result)
 
     def test_login_is_invalid(self):
