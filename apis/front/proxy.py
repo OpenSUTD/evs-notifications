@@ -7,19 +7,19 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route('/balance', methods=['POST'])
+@app.route('/info', methods=['POST'])
 def get_balances():
     headers = {'Content-Type': 'application/json'}
     data = request.data
 
-    url = f'{HOST}/balance'
+    url = f'{HOST}/info'
     r = requests.post(url, headers=headers, data=data)
     return r.text, r.status_code
 
 
-@app.route('/balance/demo')
+@app.route('/info/demo')
 def get_demo_balances():
-    url = f'{HOST}/balance/demo'
+    url = f'{HOST}/info/demo'
     r = requests.get(url)
     return r.text
 
