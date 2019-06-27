@@ -163,8 +163,7 @@ def get_amount(username, password):
     headers = {'Content-Type': 'application/json'}
     data = json.dumps({'username': username, 'password': password})
     req = requests.get(url, headers=headers, data=data)
-    response = json.loads(req.text)
-    return response['amount']
+    return float(req.text)
 
 
 def execute_and_commit(query):
