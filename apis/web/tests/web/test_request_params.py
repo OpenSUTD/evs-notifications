@@ -1,8 +1,8 @@
-import unittest
+from unittest import TestCase
 from web.utils import get_request_params
 
 
-class TestRequestParams(unittest.TestCase):
+class TestRequestParams(TestCase):
     def test_output_type(self):
         username, password = 'user', 'pass'
         data, headers = get_request_params(username, password)

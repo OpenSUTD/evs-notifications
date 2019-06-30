@@ -1,17 +1,9 @@
-import json
-import unittest
 from bs4 import BeautifulSoup
+from tests.base_test import BaseTest
 from web.transaction import Transaction, get_transactions, row_to_transaction, transaction_to_dict
 
 
-class TestGetTransactions(unittest.TestCase):
-    def setUp(self):
-        with open('tests/credentials.json') as f:
-            text = f.read()
-        obj = json.loads(text)
-        self.username = obj['username']
-        self.password = obj['password']
-
+class TestGetTransactions(BaseTest):
     def test_row_to_transaction(self):
         data = ('<tr>'
                 '  <td>transaction_id</td>'

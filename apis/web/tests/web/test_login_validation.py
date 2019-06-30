@@ -1,16 +1,8 @@
-import json
-import unittest
+from tests.base_test import BaseTest
 from web.login import login_valid
 
 
-class TestLoginValid(unittest.TestCase):
-    def setUp(self):
-        with open('tests/credentials.json') as f:
-            text = f.read()
-        obj = json.loads(text)
-        self.username = obj['username']
-        self.password = obj['password']
-
+class TestLoginValid(BaseTest):
     def test_login_is_valid(self):
         result = login_valid(self.username, self.password)
         self.assertTrue(result)

@@ -1,6 +1,6 @@
 import json
 from flask.wrappers import Response
-from tests.app.base_test import BaseTest
+from tests.base_test import BaseTest
 
 
 class TestCredit(BaseTest):

@@ -1,8 +1,8 @@
-import unittest
+from unittest import TestCase
 from web.balance import get_balance_from_text
 
 
-class TestGetBalance(unittest.TestCase):
+class TestGetBalance(TestCase):
     def test_return_type(self):
         text = 'S$ 0.00' * 2
         result = get_balance_from_text(text)
