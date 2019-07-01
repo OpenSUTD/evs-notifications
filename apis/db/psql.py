@@ -185,5 +185,6 @@ def get_connection():
     conn = psycopg2.connect(dbname='evs',
                             user='postgres',
                             password='docker',
-                            host='localhost')
+                            host='172.17.0.2',
+                            port=5432)
     return conn
