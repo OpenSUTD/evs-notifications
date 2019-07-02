@@ -2,7 +2,7 @@ import requests
 from flask import Flask, request
 from flask_cors import CORS
 
-HOST = 'http://13.251.125.232:8000'
+HOST = 'http://18.138.243.186:8000'
 app = Flask(__name__)
 CORS(app)
 

@@ -30,7 +30,7 @@ def get_info():
         return 'Account not found', 404
 
     info = get_info_dict(username, password)
-    return json.loads(info)
+    return json.dumps(info)
 
 
 @app.route('/info/demo')
@@ -43,7 +43,7 @@ def get_demo_info():
     username, password = itemgetter('username', 'password')(obj)
 
     info = get_info_dict(username, password)
-    return json.loads(info)
+    return json.dumps(info)
 
 
 def get_info_dict(username: str, password: str) -> dict:
