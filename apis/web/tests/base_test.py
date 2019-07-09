@@ -4,14 +4,16 @@ from app import app
 
 
 class BaseTest(TestCase):
-    def setUp(self):
+    @classmethod
+    def setUpClass(cls):
         app.testing = True
-        self.client = app.test_client()
+        cls.client = app.test_client()
 
         filename = 'tests/credentials.json'
-        self.username, self.password = self.read_credentials(filename)
+        cls.username, cls.password = cls.read_credentials(filename)
 
-    def read_credentials(self, filename):
+    @staticmethod
+    def read_credentials(filename):
         with open(filename) as f:
             text = f.read()
         obj = json.loads(text)
