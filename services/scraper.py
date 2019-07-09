@@ -31,12 +31,12 @@ def get_amount(account):
     url = f'http://{WEB_API_HOST}:{WEB_API_PORT}/credit'
     headers = {'Content-Type': 'application/json'}
     data = json.dumps({'username': account.username, 'password': account.password})
-    req = requests.get(url, headers=headers, data=data)
+    req = requests.post(url, headers=headers, data=data)
 
     if not req.ok:
-        raise RetrieveError(username)
+        raise RetrieveError(account.username)
 
-    amount = json.loads(req.text)['amount']
+    amount = float(req.text)
     return amount
 
 

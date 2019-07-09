@@ -13,3 +13,8 @@ new Vue({
   router,
   store,
 }).$mount('#app');
+
+router.afterEach((to, from) => {
+  ga('set', 'page', '/evs' + to.path);
+  ga('send', 'pageview');
+});

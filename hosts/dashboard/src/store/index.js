@@ -8,6 +8,7 @@ const serverHost = 'https://gabrielwong159.pythonanywhere.com';
 export default new Vuex.Store({
   state: {
     balances: null,
+    transactions: null,
     authenticated: false,
   },
 
@@ -17,7 +18,7 @@ export default new Vuex.Store({
 
   actions: {
     login({ commit }, { username, password }) {
-      let url = `${serverHost}/balance`;
+      let url = `${serverHost}/info`;
 
       let headers = { 'Content-Type': 'application/json' };
       let body = JSON.stringify({ username, password });
@@ -34,7 +35,7 @@ export default new Vuex.Store({
     },
 
     demo({ commit }) {
-      let url = `${serverHost}/balance/demo`;
+      let url = `${serverHost}/info/demo`;
       return fetch(url)
       .then(response => response.json())
       .then(json => { commit('loginSuccess', json) });
@@ -42,12 +43,14 @@ export default new Vuex.Store({
   },
 
   mutations: {
-    loginSuccess(state, data) {
-      state.balances = data;
+    loginSuccess(state, { balances, transactions }) {
+      state.balances = balances;
+      state.transactions = transactions;
       state.authenticated = true;
     },
     logout(state) {
       state.balances = null;
+      state.transactions = null;
       state.authenticated = false;
     },
   },

@@ -4,15 +4,15 @@
 
     <v-data-table id="table" class="elevation-1"
       :headers="headers"
-      :items="topups">
+      :items="tableItems">
       <template v-slot:items="props">
         <td class="text-xs-left"
           @click="dateFormat = !dateFormat">
           {{ formatDate(props.item.date) }}
         </td>
-        <td class="text-xs-right">{{ props.item.estAmt }}</td>
+        <td class="text-xs-right">{{ props.item.amount.toFixed(2) }}</td>
         <td class="text-xs-right">{{ props.item.daysSinceTopup }}</td>
-        <td class="text-xs-right">{{ props.item.estDailyAvg }}</td>
+        <td class="text-xs-right">{{ props.item.dailyAvg.toFixed(2) }}</td>
       </template>
     </v-data-table>
   </div>
@@ -21,7 +21,6 @@
 <script>
 import { mapState } from 'vuex';
 import moment from 'moment';
-import { separateBalanceTuples } from './utils/data.js';
 
 export default {
   name: 'Topup',
@@ -33,7 +32,7 @@ export default {
           sortable: false,
         },
         { 
-          text: 'Estimated topup amount ($)',
+          text: 'Topup amount ($)',
           sortable: false,
           align: 'right',
         },
@@ -43,7 +42,7 @@ export default {
           align: 'right',
         },
         {
-          text: 'Estimated daily average ($)',
+          text: 'Daily average ($)',
           sortable: false,
           align: 'right',
         }
@@ -53,40 +52,25 @@ export default {
   },
 
   computed: {
-    ...mapState(['balances']),
-    topups: function() {
-      let { dates, amounts } = separateBalanceTuples(this.balances);
-      let topups = [];
+    ...mapState(['transactions']),
+    tableItems() {
+      let transactions = this.transactions;
+      let items = [];
+      for (let i=0; i<transactions.length-1; i++) {
+        let currDate = Date.parse(transactions[i].date);
+        let prevDate = Date.parse(transactions[i+1].date);
+        let daysSinceTopup = moment(currDate).diff(prevDate, 'days');
 
-      let lastTopupDate = null;
-      for (let i=1; i<amounts.length; i++) {
-        let diff = amounts[i] - amounts[i-1];
-        if (diff <= 0) continue;  // not a topup
+        let dailyAvg = transactions[i+1].amount / daysSinceTopup;
 
-        let date = dates[i];
-        let estAmt = Math.ceil(diff / 10) * 10;  // round up to nearest 10
-        
-        let daysSinceTopup = '-';
-        if (lastTopupDate !== null) {
-          daysSinceTopup = moment(date).diff(lastTopupDate, 'days');
-        }
-        lastTopupDate = moment(date);
-
-        let estDailyAvg = 0;
-        if (topups.length > 0) {
-          let lastTopupAmt = topups[topups.length - 1].estAmt;
-          estDailyAvg = lastTopupAmt / daysSinceTopup;
-        }
-        estDailyAvg = estDailyAvg !== 0 ? estDailyAvg.toFixed(2) : '-';
-
-        topups.push({
-          date,
-          estAmt,
+        items.push({
+          date: transactions[i].date,
+          amount: transactions[i].amount,
           daysSinceTopup,
-          estDailyAvg,
+          dailyAvg,
         });
       }
-      return topups;
+      return items;
     },
   },
 

@@ -92,7 +92,7 @@ def validate_credentials(username, password):
     url = f'http://{WEB_API_HOST}:{WEB_API_PORT}/validate'
     headers = {'Content-Type': 'application/json'}
     data = json.dumps({'username': username, 'password': password})
-    req = requests.get(url, headers=headers, data=data)
+    req = requests.post(url, headers=headers, data=data)
     response = json.loads(req.text)
     return response['valid']
 
