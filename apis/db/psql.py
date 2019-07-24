@@ -98,7 +98,7 @@ def get_subscriptions_by_chat_id(chat_id: int) -> list:
     return [Subscription(*row) for row in rows]
 
 
-def insert_subscription(username: str, amount: str, chat_id: int):
+def insert_subscription(username: str, amount: float, chat_id: int):
     if not username_valid(username):
         return False
 
