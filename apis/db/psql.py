@@ -37,6 +37,8 @@ def get_balances_by_username(username) -> list:
 
 
 def get_latest_balances_by_chat_id(chat_id: int) -> list:
+    UserBalance = namedtuple('UserBalance', 'username, amount')
+
     query = f"""SELECT DISTINCT balance.username, balance.amount
                 FROM subscription
                 INNER JOIN (
@@ -49,10 +51,7 @@ def get_latest_balances_by_chat_id(chat_id: int) -> list:
                 ON subscription.username = balance.username
                     AND subscription.chat_id = {chat_id};"""
     rows = execute_and_fetchall(query)
-    UserBalance = namedtuple('UserBalance', 'username, amount')
-
-    if len(rows) > 0:
-        return [UserBalance(*row) for row in rows]
+    db_balances = [UserBalance(*row) for row in rows]
 
     query = f"""SELECT DISTINCT account.username, account.password
                 FROM subscription
@@ -60,11 +59,29 @@ def get_latest_balances_by_chat_id(chat_id: int) -> list:
                 ON account.username = subscription.username
                 WHERE subscription.chat_id = {chat_id};"""
     accounts = execute_and_fetchall(query)
-    amounts = []
+    web_balances = []
     for username, password in accounts:
         amount = get_amount(username, password)
-        amounts.append(UserBalance(username, amount))
-    return amounts
+        web_balances.append(UserBalance(username, amount))
+
+    def get_matching_db_balance(web_balance):
+        for db_balance in db_balances:
+            if db_balance.username == web_balance.username:
+                return db_balance
+        return None
+
+    # retrieve from db if web is not available
+    balances = []
+    for web_balance in web_balances:
+        if web_balance.amount != -1:
+            balances.append(web_balance)
+        else:
+            db_balance = get_matching_db_balance(web_balance)
+            if db_balance is not None:
+                balances.append(db_balance)
+            else:
+                balances.append(web_balance)
+    return sorted(balances)
 
 
 def insert_balance(username, retrieve_date, amount):
@@ -81,7 +98,7 @@ def get_subscriptions_by_chat_id(chat_id: int) -> list:
     return [Subscription(*row) for row in rows]
 
 
-def insert_subscription(username: str, amount: str, chat_id: int):
+def insert_subscription(username: str, amount: float, chat_id: int):
     if not username_valid(username):
         return False
 
@@ -162,8 +179,11 @@ def get_amount(username, password):
     url = f'http://{WEB_API_HOST}:{WEB_API_PORT}/credit'
     headers = {'Content-Type': 'application/json'}
     data = json.dumps({'username': username, 'password': password})
-    req = requests.get(url, headers=headers, data=data)
-    return float(req.text)
+    req = requests.post(url, headers=headers, data=data)
+    if req.ok:
+        return float(req.text)
+    else:
+        return -1
 
 
 def execute_and_commit(query):

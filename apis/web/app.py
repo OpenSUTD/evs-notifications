@@ -1,12 +1,30 @@
 import json
 from flask import Flask, request
+from requests.exceptions import ConnectionError
+from functools import wraps
 from operator import itemgetter
 from web import login_valid, get_amount, get_transactions
+from web.exceptions import LoginError
 
 app = Flask(__name__)
 
 
+def catch_errors(route_func):
+    @wraps(route_func)
+    def inner(*args, **kwargs):
+        try:
+            result = route_func(*args, **kwargs)
+            return result
+        except ConnectionError:
+            return f'Could not access EVS web', 503
+        except LoginError:
+            username = request.get_json()['username']
+            return f'Error on account login: {username}', 404
+    return inner
+
+
 @app.route('/validate', methods=['POST'])
+@catch_errors
 def validate():
     body = request.get_json()
     username, password = itemgetter('username', 'password')(body)
@@ -16,28 +34,20 @@ def validate():
 
 
 @app.route('/credit', methods=['POST'])
+@catch_errors
 def credit():
     body = request.get_json()
     username, password = itemgetter('username', 'password')(body)
-
-    try:
-        amount = get_amount(username, password)
-    except AssertionError:
-        return f'Error on account: {username}', 404
-
+    amount = get_amount(username, password)
     return str(amount)
 
 
 @app.route('/transaction', methods=['POST'])
+@catch_errors
 def transaction():
     body = request.get_json()
     username, password = itemgetter('username', 'password')(body)
-
-    try:
-        transactions = get_transactions(username, password)
-    except AssertionError:
-        return f'Error on account: {username}', 404
-
+    transactions = get_transactions(username, password)
     return json.dumps(transactions)
 
 
