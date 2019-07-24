@@ -1,6 +1,7 @@
 import re
 import requests
 from .utils import login_url, credit_url, get_request_params
+from.exceptions import LoginError
 
 
 def get_amount(username, password):
@@ -9,10 +10,11 @@ def get_amount(username, password):
 
         # store login cookies in session
         r = sess.post(url=login_url, data=data, headers=headers)
-        assert 'Invalid' not in r.url, 'Wrong login credentials'
+        if 'Invalid' in r.url:
+            raise LoginError('Wrong login credentials')
 
         r = sess.get(credit_url)
-        amount = get_balance_from_text(r.text)
+    amount = get_balance_from_text(r.text)
     return amount
 
 

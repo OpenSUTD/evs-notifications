@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from collections import namedtuple
 from datetime import datetime
 from .utils import login_url, transaction_url, get_request_params
+from .exceptions import LoginError
 
 
 Transaction = namedtuple('Transaction', 'transaction_id,'
@@ -21,7 +22,8 @@ def get_transactions(username: str, password: str) -> list:
 
         # store login cookies in session
         r = sess.post(url=login_url, data=data, headers=headers)
-        assert 'Invalid' not in r.url, 'Wrong login credentials'
+        if 'Invalid' in r.url:
+            raise LoginError('Wrong login credentials')
 
         r = sess.get(transaction_url)
         html_text = r.text
