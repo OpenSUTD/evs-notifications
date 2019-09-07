@@ -1,7 +1,7 @@
 import re
 import requests
 from .utils import login_url, credit_url, get_request_params
-from.exceptions import LoginError
+from .exceptions import LoginError
 
 
 def get_amount(username, password):

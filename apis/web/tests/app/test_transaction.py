@@ -14,7 +14,7 @@ class TestTransaction(BaseTest):
         self.assertEqual(response.status_code, 404)
 
         response_text = response.get_data(as_text=True)
-        self.assertEqual(response_text, f'Error on account: {username}')
+        self.assertEqual(response_text, f'Error on account login: {username}')
 
     def test_transaction_result_data_type(self):
         response = self.transaction(self.username, self.password)

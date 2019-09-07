@@ -17,7 +17,7 @@ class TestCredit(BaseTest):
         self.assertEqual(response.status_code, 404)
 
         response_text = response.get_data(as_text=True)
-        self.assertEqual(response_text, f'Error on account: {username}')
+        self.assertEqual(response_text, f'Error on account login: {username}')
 
     def credit(self, username: str, password: str) -> Response:
         headers = {'Content-Type': 'application/json'}

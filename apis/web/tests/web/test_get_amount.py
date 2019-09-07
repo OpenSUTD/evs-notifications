@@ -1,5 +1,6 @@
 from tests.base_test import BaseTest
 from web.balance import get_amount
+from web.exceptions import LoginError
 
 
 class TestGetAmount(BaseTest):
@@ -9,5 +10,5 @@ class TestGetAmount(BaseTest):
 
     def test_unsuccessful_login(self):
         username, password = 'foo', 'bar'
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(LoginError):
             get_amount(username, password)
