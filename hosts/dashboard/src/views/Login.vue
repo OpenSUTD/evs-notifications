@@ -18,20 +18,23 @@
 				type="password"
 				autocomplete="current-password" />
 
-			<v-btn @click="login">
+			<v-btn
+				@click="login"
+				:loading="loading.normal"
+			>
 				Login
-				<v-progress-circular indeterminate
-					v-if="loading"
-					class="ml-2"
-					size="16"
-					width="1" />
 			</v-btn>
+			<v-btn flat outline class="ma-4"
+				@click="demo"
+				:loading="loading.demo"
+			>
+				Demo
+			</v-btn>
+
 			<p v-if="failed" class="mt-2 red--text">
 				Login failed. Please try again.
 			</p>
 		</v-form>
-
-		<v-btn flat outline class="ma-4" @click="demo">Demo</v-btn>
 	</div>
 </template>
 
@@ -42,13 +45,16 @@ export default {
 		return {
 			username: '',
 			password: '',
-			loading: false,
+			loading: {
+				normal: false,
+				demo: false,
+			},
 			failed: false,
 		};
 	},
 	methods: {
 		login() {
-			this.loading = true;
+			this.loading.normal = true;
 
 			let account = {
 				username: this.username,
@@ -61,15 +67,15 @@ export default {
 				this.failed = true;
 				this.password = '';
 			})
-			.finally(() => { this.loading = false });
+			.finally(() => { this.loading.normal = false });
 		},
 
 		demo() {
-			this.loading = true;
+			this.loading.demo = true;
 
 			this.$store.dispatch('demo')
 			.then(() => { this.$router.push('/balance') })
-			.finally(() => { this.loading = false });
+			.finally(() => { this.loading.demo = false });
 		}
 	},
 };
