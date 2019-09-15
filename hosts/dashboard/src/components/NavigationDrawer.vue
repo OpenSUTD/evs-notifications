@@ -21,7 +21,10 @@
     <v-divider />
 
     <v-list class="pt-0">
-      <v-list-tile v-ripple v-for="page in pages" :to="page.path">
+      <v-list-tile v-ripple v-for="(page, index) in pages"
+        :key="index"
+        :to="page.path"
+      >
         <v-list-tile-action>
           <v-icon>{{ page.icon }}</v-icon>
         </v-list-tile-action>
