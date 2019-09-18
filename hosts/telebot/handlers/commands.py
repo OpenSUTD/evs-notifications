@@ -35,9 +35,9 @@ def balance(update, context):
 
 
 def dashboard(update, context):
-    logger.info(f'{update.message.chat_id}) Command - dashboard')
+    logger.info(f'({update.message.chat_id}) Command - dashboard')
     text = ('View some dashboard analytics for your aircon usage: '
-            'https://open.sutd.dev/evs-notifications')
+            'https://opensutd.org/evs-notifications')
     context.bot.send_message(chat_id=update.message.chat_id, text=text)
 
 
