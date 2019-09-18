@@ -3,7 +3,7 @@ from flask import Flask, request
 from requests.exceptions import ConnectionError
 from functools import wraps
 from operator import itemgetter
-from web import login_valid, get_amount, get_transactions
+from web import login_valid, get_amount, get_transactions, get_transactions_demo
 from web.exceptions import LoginError
 
 app = Flask(__name__)
@@ -48,6 +48,15 @@ def transaction():
     body = request.get_json()
     username, password = itemgetter('username', 'password')(body)
     transactions = get_transactions(username, password)
+    return json.dumps(transactions)
+
+
+@app.route('/transaction/demo', methods=['POST'])
+@catch_errors
+def transaction_demo():
+    body = request.get_json()
+    username, password = itemgetter('username', 'password')(body)
+    transactions = get_transactions_demo(username, password)
     return json.dumps(transactions)
 
 

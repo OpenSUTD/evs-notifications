@@ -1,6 +1,8 @@
+from datetime import datetime
 from bs4 import BeautifulSoup
 from tests.base_test import BaseTest
-from web.transaction import Transaction, get_transactions, row_to_transaction, transaction_to_dict
+from web.transaction import (Transaction, get_transactions, get_transactions_demo,
+                             row_to_transaction, transaction_to_dict)
 
 
 class TestGetTransactions(BaseTest):
@@ -44,3 +46,24 @@ class TestGetTransactions(BaseTest):
             date, amount = txn['date'], txn['amount']
             self.assertEqual(type(date), str)
             self.assertEqual(type(amount), float)
+
+    def test_get_transactions_demo(self):
+        transactions = get_transactions_demo(self.username, self.password)
+        self.assertEqual(type(transactions), list)
+
+    def test_get_transactions_demo_attributes(self):
+        transactions = get_transactions_demo(self.username, self.password)
+        for txn in transactions:
+            self.assertEqual(type(txn), dict)
+
+            date, amount = txn['date'], txn['amount']
+            self.assertEqual(type(date), str)
+            self.assertEqual(type(amount), float)
+
+    def test_get_transactions_demo_cutoff(self):
+        cutoff = datetime(2019, 6, 1)
+        transactions = get_transactions_demo(self.username, self.password, cutoff)
+        for txn in transactions:
+            date = txn['date']
+            self.assertLessEqual(datetime.strptime(date, '%Y-%m-%d'),
+                                 cutoff)

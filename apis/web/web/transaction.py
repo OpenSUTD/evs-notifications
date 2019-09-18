@@ -17,6 +17,7 @@ Transaction = namedtuple('Transaction', 'transaction_id,'
 
 
 def get_transactions(username: str, password: str) -> list:
+    # see transaction_to_dict for format of each transaction returned
     with requests.session() as sess:
         data, headers = get_request_params(username, password)
 
@@ -28,6 +29,13 @@ def get_transactions(username: str, password: str) -> list:
         r = sess.get(transaction_url)
         html_text = r.text
     return get_transactions_from_html_page(html_text)
+
+
+def get_transactions_demo(username: str, password: str, cutoff=datetime(2019, 8, 24)) -> list:
+    transactions = get_transactions(username, password)
+    transactions_demo = [txn for txn in transactions
+                         if datetime.strptime(txn['date'], '%Y-%m-%d') <= cutoff]
+    return transactions_demo
 
 
 def get_transactions_from_html_page(html_text: str) -> list:
