@@ -2,6 +2,7 @@ import json
 import requests
 import psycopg2
 from collections import namedtuple
+from datetime import datetime
 
 WEB_API_HOST = 'localhost'
 WEB_API_PORT = 5000
@@ -31,6 +32,22 @@ def get_balances_by_username(username) -> list:
     query = f"""SELECT retrieve_date, amount
                 FROM balance
                 WHERE username = '{username}'
+                ORDER BY id;"""
+    rows = execute_and_fetchall(query)
+    return [(parse_date(date), amount) for date, amount in rows]
+
+
+def get_demo_balances_by_username(username, cutoff=datetime(2019, 8, 24)) -> list:
+    if not username_valid(username):
+        return []
+
+    def parse_date(date):
+        return '{:04d}/{:02d}/{:02d}'.format(date.year, date.month, date.day)
+
+    query = f"""SELECT retrieve_date, amount
+                FROM balance
+                WHERE username = '{username}'
+                    AND retrieve_date <= '{parse_date(cutoff)}'
                 ORDER BY id;"""
     rows = execute_and_fetchall(query)
     return [(parse_date(date), amount) for date, amount in rows]

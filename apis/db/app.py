@@ -26,6 +26,12 @@ def get_balances_by_username(username):
     return json.dumps(balances)
 
 
+@app.route('/balance/username/demo/<username>')
+def get_demo_balances_by_username(username):
+    balances = db.get_demo_balances_by_username(username)
+    return json.dumps(balances)
+
+
 @app.route('/balance/chatid/<chat_id>')
 def get_latest_balances_by_chat_id(chat_id):
     balances = db.get_latest_balances_by_chat_id(chat_id)
