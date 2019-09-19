@@ -42,27 +42,33 @@ def get_demo_info():
     obj = json.loads(s)
     username, password = itemgetter('username', 'password')(obj)
 
-    info = get_info_dict(username, password)
+    info = get_info_dict(username, password, demo=True)
     return json.dumps(info)
 
 
-def get_info_dict(username: str, password: str) -> dict:
-    balances = get_balances(username)
-    transactions = get_transactions(username, password)
+def get_info_dict(username: str, password: str, demo=False) -> dict:
+    balances = get_balances(username, demo)
+    transactions = get_transactions(username, password, demo)
     return {
         'balances': balances,
         'transactions': transactions,
     }
 
 
-def get_balances(username: str) -> list:
-    url = f'http://{DB_API_HOST}:{DB_API_PORT}/balance/username/{username}'
+def get_balances(username: str, demo: bool) -> list:
+    if demo:
+        url = f'http://{DB_API_HOST}:{DB_API_PORT}/balance/username/demo/{username}'
+    else:
+        url = f'http://{DB_API_HOST}:{DB_API_PORT}/balance/username/{username}'
     r = requests.get(url)
     return json.loads(r.text)
 
 
-def get_transactions(username: str, password: str) -> list:
-    url = f'http://{WEB_API_HOST}:{WEB_API_PORT}/transaction'
+def get_transactions(username: str, password: str, demo: bool) -> list:
+    if demo:
+        url = f'http://{WEB_API_HOST}:{WEB_API_PORT}/transaction/demo'
+    else:
+        url = f'http://{WEB_API_HOST}:{WEB_API_PORT}/transaction'
     headers = {'Content-Type': 'application/json'}
     data = json.dumps({'username': username, 'password': password})
     req = requests.post(url, headers=headers, data=data)
