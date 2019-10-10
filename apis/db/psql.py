@@ -9,7 +9,8 @@ WEB_API_PORT = 5000
 
 
 def get_accounts() -> list:
-    query = """SELECT * FROM account;"""
+    query = """SELECT username, password
+               FROM account;"""
     rows = execute_and_fetchall(query)
     Account = namedtuple('Account', 'username, password')
     return [Account(*row) for row in rows]
@@ -59,10 +60,10 @@ def get_latest_balances_by_chat_id(chat_id: int) -> list:
     query = f"""SELECT DISTINCT balance.username, balance.amount
                 FROM subscription
                 INNER JOIN (
-                    SELECT *
+                    SELECT id, username, amount
                     FROM balance
                     WHERE balance.id IN (
-                        SELECT MAX (id) FROM balance GROUP BY username
+                        SELECT MAX(id) FROM balance GROUP BY username
                     )
                 ) AS balance
                 ON subscription.username = balance.username
@@ -73,7 +74,7 @@ def get_latest_balances_by_chat_id(chat_id: int) -> list:
     query = f"""SELECT DISTINCT account.username, account.password
                 FROM subscription
                 INNER JOIN account
-                ON account.username = subscription.username
+                    ON account.username = subscription.username
                 WHERE subscription.chat_id = {chat_id};"""
     accounts = execute_and_fetchall(query)
     web_balances = []
@@ -108,7 +109,8 @@ def insert_balance(username, retrieve_date, amount):
 
 
 def get_subscriptions_by_chat_id(chat_id: int) -> list:
-    query = f"""SELECT * FROM subscription
+    query = f"""SELECT id, username, amount, chat_id
+                FROM subscription
                 WHERE chat_id = {chat_id};"""
     rows = execute_and_fetchall(query)
     Subscription = namedtuple('Subscription', 'id, username, amount, chat_id')
@@ -137,10 +139,10 @@ def get_notifications() -> list:
             SELECT DISTINCT balance.username, balance.amount, chat_id
             FROM subscription
             INNER JOIN (
-               SELECT *
+               SELECT id, username, amount
                FROM balance
                WHERE balance.id IN (
-                   SELECT MAX (id) FROM balance GROUP BY username
+                   SELECT MAX(id) FROM balance GROUP BY username
                )
             ) AS balance
             ON balance.username = subscription.username
@@ -148,27 +150,20 @@ def get_notifications() -> list:
         );
     
         CREATE TEMP VIEW latest_notes AS (
-            SELECT *
+            SELECT username, chat_id, message_date
             FROM notification
             WHERE notification.id IN (
                 SELECT MAX (id) FROM notification GROUP BY username, chat_id
             )
+                AND message_date < DATE '2019-10-09'
         );
     
         SELECT username, amount, chat_id
         FROM all_notes
         LEFT JOIN latest_notes
         USING (username, chat_id)
-        WHERE latest_notes.message_date <= CURRENT_DATE - interval '3 days'
-        
-        UNION
-        
-        SELECT username, amount, chat_id
-        FROM all_notes
-        LEFT JOIN latest_notes
-        USING (username, chat_id)
-        WHERE latest_notes.username IS NULL AND latest_notes.chat_id IS NULL;
-
+        WHERE latest_notes.message_date <= CURRENT_DATE - interval '3 days';
+            OR (latest_notes.username IS NULL AND latest_notes.chat_id IS NULL);
     """
     rows = execute_and_fetchall(query)
     Notification = namedtuple('Notification', 'username, amount, chat_id')
