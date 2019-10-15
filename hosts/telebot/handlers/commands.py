@@ -9,6 +9,17 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
+handlers = []
+
+
+def register_command_handler(command: str):
+    def inner(callback):
+        handlers.append(CommandHandler(command, callback))
+        return callback
+    return inner
+
+
+@register_command_handler('start')
 def start(update, context):
     logger.info(f'({update.message.chat_id}) Command - start')
     text = ('Hi! Receive notifications when your EVS credit balance '
@@ -19,6 +30,7 @@ def start(update, context):
     context.bot.send_message(chat_id=update.message.chat_id, text=text)
 
 
+@register_command_handler('balance')
 def balance(update, context):
     logger.info(f'({update.message.chat_id}) Command - balance')
     chat_id = update.message.chat_id
@@ -34,6 +46,7 @@ def balance(update, context):
         context.bot.send_message(chat_id=chat_id, text=text)
 
 
+@register_command_handler('dashboard')
 def dashboard(update, context):
     logger.info(f'({update.message.chat_id}) Command - dashboard')
     text = ('View some dashboard analytics for your aircon usage: '
@@ -41,6 +54,7 @@ def dashboard(update, context):
     context.bot.send_message(chat_id=update.message.chat_id, text=text)
 
 
+@register_command_handler('security')
 def security(update, context):
     logger.info(f'({update.message.chat_id}) Command - security')
     text = ('Your credentials are being stored in plaintext. '
@@ -55,11 +69,3 @@ def get_latest_balances_by_chat_id(chat_id):
     req = requests.get(url)
     rows = json.loads(req.text)
     return [UserBalance(*row) for row in rows]
-
-
-handlers = [
-    CommandHandler('start', start),
-    CommandHandler('balance', balance),
-    CommandHandler('dashboard', dashboard),
-    CommandHandler('security', security),
-]
