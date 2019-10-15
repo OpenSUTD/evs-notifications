@@ -38,7 +38,7 @@ class TestDatabase(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.client = docker.from_env()
-        cls.container = cls.client.containers.run('pg_test', detach=True, auto_remove=True)
+        cls.container = cls.client.containers.run('pg_test', name='pg-docker', detach=True, auto_remove=True)
         # wait for container to fully set up
         while True:
             try:
