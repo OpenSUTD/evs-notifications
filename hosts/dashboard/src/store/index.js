@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
-const serverHost = 'https://gabrielwong159.pythonanywhere.com';
+const serverHost = 'https://evs-proxy.azurewebsites.net';
 
 export default new Vuex.Store({
   state: {
