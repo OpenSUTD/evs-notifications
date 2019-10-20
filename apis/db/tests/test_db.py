@@ -2,8 +2,8 @@ import time
 import docker
 from psycopg2 import OperationalError
 from unittest import TestCase
-from psql import (get_connection,
-                  get_accounts, insert_account)
+from psql.conn import get_connection
+from psql import (get_accounts, insert_account)
 
 
 class TestDatabase(TestCase):
