@@ -3,7 +3,8 @@ import docker
 from psycopg2 import OperationalError
 from unittest import TestCase
 from psql.conn import get_connection
-from psql import (get_accounts, insert_account)
+from psql import (get_accounts, insert_account,
+                  insert_command)
 
 
 class TestDatabase(TestCase):
@@ -34,6 +35,11 @@ class TestDatabase(TestCase):
 
         result = get_accounts()
         self.assertEqual(result, data)
+
+    def test_command(self):
+        insert_command('command', 0, True)
+        insert_command('command', 0, False)
+        self.assertTrue(True)
 
     @classmethod
     def setUpClass(cls):

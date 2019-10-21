@@ -40,7 +40,7 @@ CREATE TABLE command (
     id SERIAL,
     name VARCHAR(32) NOT NULL,
     chat_id INTEGER NOT NULL,
-    is_cancelled BOOLEAN NOT NULL,
+    is_completed BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL DEFAULT TIMEZONE('Asia/Singapore', now()),
     PRIMARY KEY (id)
 );

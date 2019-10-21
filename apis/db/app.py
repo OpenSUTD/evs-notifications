@@ -80,5 +80,13 @@ def insert_notification():
     return 'Success'
 
 
+@app.route('/command', methods=['POST'])
+def insert_command():
+    body = request.get_json()
+    name, chat_id, is_completed = itemgetter('name', 'chat_id', 'is_completed')(body)
+    db.insert_command(name, chat_id, is_completed)
+    return 'Success'
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8001)

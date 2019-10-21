@@ -53,7 +53,7 @@ class TestApp(TestCase):
             data = json.dumps({
                 'username': 'username',
                 'amount': 0.0,
-                'chat_id': 'chat_id',
+                'chat_id': 0,
             })
             self.client.post('/subscription', data=data, headers=headers)
 
@@ -70,10 +70,20 @@ class TestApp(TestCase):
             headers = {'Content-Type': 'application/json'}
             data = json.dumps({
                 'username': 'username',
-                'chat_id': 'chat_id',
+                'chat_id': 0,
                 'message_date': 'YYYY-MM-DD',
             })
             self.client.post('/notification', data=data, headers=headers)
+
+    def test_insert_command(self):
+        with self.assertRaises(DOCKER_CONTAINER_NOT_FOUND_ERROR):
+            headers = {'Content-Type': 'application/json'}
+            data = json.dumps({
+                'name': 'command',
+                'chat_id': 0,
+                'is_completed': False
+            })
+            self.client.post('/command', data=data, headers=headers)
 
     @classmethod
     def setUpClass(cls):
