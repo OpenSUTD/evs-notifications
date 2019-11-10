@@ -83,8 +83,8 @@ def insert_notification():
 @app.route('/command', methods=['POST'])
 def insert_command():
     body = request.get_json()
-    name, chat_id, is_completed = itemgetter('name', 'chat_id', 'is_completed')(body)
-    db.insert_command(name, chat_id, is_completed)
+    name, chat_id, is_completed, is_cancelled = itemgetter('name', 'chat_id', 'is_completed', 'is_cancelled')(body)
+    db.insert_command(name, chat_id, is_completed, is_cancelled)
     return 'Success'
 
 
