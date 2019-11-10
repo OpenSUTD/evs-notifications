@@ -1,19 +1,12 @@
 from telegram.ext import Updater
-from handlers import commands as cmd
-from handlers.conv import (add_subscription as add,
-                           view_subscription as view,
-                           feedback as feedback)
-import config
-
-for obj in [cmd, add, view, feedback]:
-    for name, value in config.network.items():
-        setattr(obj, name, value)
+from .handlers import commands as cmd
+from .handlers.conv import (add_subscription as add,
+                            view_subscription as view,
+                            feedback as feedback)
 
 
 class Bot(object):
-    def __init__(self):
-        with open('token.txt', 'r') as f:
-            token = f.read().strip()
+    def __init__(self, token: str):
         self.updater = Updater(token=token, use_context=True)
         self.dispatcher = self.updater.dispatcher
 

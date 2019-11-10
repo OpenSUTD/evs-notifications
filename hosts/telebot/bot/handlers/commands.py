@@ -1,13 +1,10 @@
 import json
 import requests
-import logging
 from collections import namedtuple
 from telegram.ext import CommandHandler
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
-logger = logging.getLogger(__name__)
-
+from ..config import DB_API_HOST, DB_API_PORT
+from .logging import logger, log_command_in_db
 
 handlers = []
 
@@ -75,11 +72,4 @@ def get_latest_balances_by_chat_id(chat_id):
 
 def log_command(name: str, chat_id: int):
     logger.info(f'({chat_id}) Command - {name}')
-
-    url = f'http://{DB_API_HOST}:{DB_API_PORT}/command'
-    data = {
-        'name': name,
-        'chat_id': chat_id,
-        'is_completed': True,
-    }
-    requests.post(url, json=data)
+    log_command_in_db(name, chat_id, is_completed=True, is_cancelled=False)

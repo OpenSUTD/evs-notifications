@@ -1,14 +1,15 @@
 import json
 import requests
-import logging
 from telegram import ChatAction
 from telegram.ext import CommandHandler, ConversationHandler, MessageHandler, Filters
 from requests.exceptions import ConnectionError
 from enum import Enum
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
-logger = logging.getLogger(__name__)
+from ...config import (WEB_API_HOST, WEB_API_PORT,
+                       DB_API_HOST, DB_API_PORT)
+from ..logging import logger, log_command_in_db
+
+COMMAND_NAME = 'add_subscription'
 
 
 class States(Enum):
@@ -74,16 +75,21 @@ def amount(update, context):
     if add_successful:
         logger.info(f'({update.message.chat_id}) Add subscription - '
                     f'subscription added: ({username}, {amount}, {chat_id})')
+        log_command_in_db(COMMAND_NAME, update.message.chat_id,
+                          is_completed=True, is_cancelled=False)
         update.message.reply_text(f'Your subscription has been successfully added: {username} - ${amount:.2f}\n\n'
                                   f'Use /view to view and delete your subscriptions.')
     else:
         logger.info(f'({update.message.chat_id}) Add subscription - '
                     f'subscription failed: ({username}, {amount}, {chat_id})')
         update.message.reply_text('Your subscription could not be added. Please try again later.')
+        log_command_in_db(COMMAND_NAME, update.message.chat_id,
+                          is_completed=False, is_cancelled=False)
     return ConversationHandler.END
 
 
 def cancel(update, context):
+    log_command_in_db(COMMAND_NAME, update.message.chat_id, is_completed=False, is_cancelled=True)
     update.message.reply_text('Ok bye')
     return ConversationHandler.END
 

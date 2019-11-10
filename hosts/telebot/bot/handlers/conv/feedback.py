@@ -1,12 +1,12 @@
 import json
 import requests
-import logging
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, Filters
 from enum import Enum
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
-logger = logging.getLogger(__name__)
+from ...config import TELE_API_HOST, TELE_API_PORT
+from ..logging import logger, log_command_in_db
+
+COMMAND_NAME = 'feedback'
 
 
 class States(Enum):
@@ -28,14 +28,17 @@ def feedback(update, context):
     logger.info(f'({chat_id}) Feedback: {text}')
     message_successful = message_admin(chat_id, text)
     if message_successful:
+        log_command_in_db(COMMAND_NAME, update.message.chat_id, is_completed=True, is_cancelled=False)
         update.message.reply_text('Your message has been successfully received. Thank you!')
     else:
+        log_command_in_db(COMMAND_NAME, update.message.chat_id, is_completed=False, is_cancelled=False)
         update.message.reply_text('I am sorry, but your message could not be received.'
                                   'Please try again later.')
     return ConversationHandler.END
 
 
 def cancel(update, context):
+    log_command_in_db(COMMAND_NAME, update.message.chat_id, is_completed=False, is_cancelled=True)
     update.message.reply_text('Ok bye')
     return ConversationHandler.END
 
