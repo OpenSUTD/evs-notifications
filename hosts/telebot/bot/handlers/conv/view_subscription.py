@@ -31,7 +31,7 @@ def callback(update, context):
     data = query.data
     if data == 'cancel':
         logger.info(f'({chat_id}) View subscription - cancel')
-        log_command_in_db(COMMAND_NAME, update.message.chat_id, is_completed=True, is_cancelled=False)
+        log_command_in_db(COMMAND_NAME, chat_id, is_completed=True, is_cancelled=False)
         query.edit_message_text('Ok bye')
         return ConversationHandler.END
 
