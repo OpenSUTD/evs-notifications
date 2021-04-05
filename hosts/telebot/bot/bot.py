@@ -20,3 +20,6 @@ class Bot(object):
     def start(self):
         self.updater.start_polling()
         self.updater.idle()
+
+    def send_message(self, chat_id: int, text: str):
+        self.updater.bot.send_message(chat_id=chat_id, text=text)
