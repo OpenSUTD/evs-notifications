@@ -3,9 +3,9 @@
     <h1 class="mb-3">Usage</h1>
 
     <v-btn-toggle mandatory id="toggleDates">
-      <v-btn flat @click="plotAll()">All</v-btn>
       <v-btn flat @click="plotMonth()">Past Month</v-btn>
       <v-btn flat @click="plotWeek()">Past Week</v-btn>
+      <v-btn flat @click="plotAll()">All</v-btn>
     </v-btn-toggle>
 
     <v-container grid-list-md>
@@ -94,16 +94,16 @@ export default {
 
   mounted() {
     // necessary to allow re-plotting when re-navigated to
-    if (this.balances) this.plotAll();
+    if (this.balances) this.plotMonth();
   },
 
   watch: {
     balances: function() {
       // plot when updated with data from async fetch
-      this.plotAll();
+      this.plotMonth();
     },
     binding: function() {
-      this.plotAll();
+      this.plotMonth();
     },
   },
 }
