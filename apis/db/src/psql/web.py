@@ -1,8 +1,9 @@
 import json
+import os
 import requests
 
-WEB_API_HOST = 'localhost'
-WEB_API_PORT = 5000
+WEB_API_HOST = os.environ.get('WEB_API_HOST', 'localhost')
+WEB_API_PORT = os.environ.get('WEB_API_PORT', 5000)
 
 
 def get_amount(username: str, password: str) -> float:
