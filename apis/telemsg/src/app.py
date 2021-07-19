@@ -1,10 +1,10 @@
+import os
 from flask import Flask, request
 from operator import itemgetter
 from bot import send_message
 
 app = Flask(__name__)
-with open('admin.txt', 'r') as f:
-    ADMIN_ID = int(f.read().strip())
+ADMIN_ID = os.environ.get('TELEGRAM_ADMIN_ID')
 
 
 @app.route('/message', methods=['POST'])

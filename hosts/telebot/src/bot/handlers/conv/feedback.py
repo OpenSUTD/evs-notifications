@@ -3,7 +3,7 @@ import requests
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, Filters
 from enum import Enum
 
-from ...config import TELE_API_HOST, TELE_API_PORT
+from ...config import TELEMSG_API_HOST, TELEMSG_API_PORT
 from ..logging import logger, log_command_in_db
 
 COMMAND_NAME = 'feedback'
@@ -44,7 +44,7 @@ def cancel(update, context):
 
 
 def message_admin(chat_id, text):
-    url = f'http://{TELE_API_HOST}:{TELE_API_PORT}/message/admin'
+    url = f'http://{TELEMSG_API_HOST}:{TELEMSG_API_PORT}/message/admin'
     headers = {'Content-Type': 'application/json'}
     data = json.dumps({'chat_id': chat_id, 'text': text})
     req = requests.post(url, headers=headers, data=data)

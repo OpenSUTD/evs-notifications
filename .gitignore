@@ -5,3 +5,5 @@ venv/
 
 data/
 config/
+
+.env

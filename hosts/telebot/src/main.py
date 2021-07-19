@@ -1,10 +1,12 @@
+import os
 from bot import Bot
+
+TOKEN = os.environ.get('TELEGRAM_TOKEN')
+
 
 
 def main():
-    with open('token.txt', 'r') as f:
-        token = f.read().strip()
-    bot = Bot(token)
+    bot = Bot(TOKEN)
     bot.add_handlers()
     bot.start()
 

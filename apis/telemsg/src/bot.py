@@ -1,13 +1,13 @@
+import os
 from telegram.ext import Updater
 from telegram.error import BadRequest, Unauthorized
 
-with open('token.txt', 'r') as f:
-    token = f.read().strip()
+TOKEN = os.environ.get('TELEGRAM_TOKEN')
+updater = Updater(token=TOKEN)
+bot = updater.dispatcher.bot
 
 
 def send_message(chat_id: int, text: str):
-    updater = Updater(token=token)
-    bot = updater.dispatcher.bot
     try:
         bot.send_message(chat_id=chat_id, text=text)
         return True
