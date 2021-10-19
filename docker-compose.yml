@@ -48,6 +48,23 @@ services:
     container_name: evs_web_api
     ports:
       - "${WEB_API_PORT}:8080"
+    restart: "on-failure"
+
+  frontend_api:
+    depends_on:
+      - db_api
+      - web_api
+    build: apis/front
+    image: evs-front-api:latest
+    container_name: evs_front_api
+    ports:
+      - "${FRONTEND_API_PORT}:8080"
+    environment:
+      DB_API_HOST: "db_api"
+      DB_API_PORT: "8080"
+      WEB_API_HOST: "web_api"
+      WEB_API_PORT: "8080"
+    restart: "on-failure"
 
   telebot:
     depends_on:

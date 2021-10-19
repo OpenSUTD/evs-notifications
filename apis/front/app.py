@@ -1,15 +1,16 @@
 import logging
 import json
+import os
 import requests
 from flask import Flask, request
 from flask_cors import CORS
 from operator import itemgetter
 
-DB_API_HOST = 'localhost'
-DB_API_PORT = 8001
+DB_API_HOST = os.environ.get('DB_API_HOST', 'localhost')
+DB_API_PORT = os.environ.get('DB_API_PORT', 8001)
 
-WEB_API_HOST = 'localhost'
-WEB_API_PORT = 5000
+WEB_API_HOST = os.environ.get('WEB_API_HOST', 'localhost')
+WEB_API_PORT = os.environ.get('WEB_API_PORT', 5000)
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
