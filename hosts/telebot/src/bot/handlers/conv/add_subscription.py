@@ -38,6 +38,11 @@ def password(update, context):
     context.chat_data['password'] = password
     logger.info(f'({chat_id}) Add subscription - password: {password}')
 
+    if password == '/cancel':
+        log_command_in_db(COMMAND_NAME, update.message.chat_id, is_completed=False, is_cancelled=True)
+        update.message.reply_text('Ok bye')
+        return ConversationHandler.END
+
     context.bot.send_chat_action(chat_id=chat_id, action=ChatAction.TYPING)
     username = context.chat_data['username']
     try:
