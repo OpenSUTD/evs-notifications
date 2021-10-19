@@ -12,6 +12,7 @@ services:
       POSTGRES_DB: "evs"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "docker"
+    restart: "on-failure"
 
 
   db_api:
@@ -28,6 +29,7 @@ services:
       DB_PORT: "5432"
       WEB_API_HOST: "web_api"
       WEB_API_PORT: "8080"
+    restart: "on-failure"
 
   telemsg_api:
     build: apis/telemsg
@@ -38,6 +40,7 @@ services:
     environment:
       TELEGRAM_TOKEN: "${TELEGRAM_TOKEN}"
       TELEGRAM_ADMIN_ID: "${TELEGRAM_ADMIN_ID}"
+    restart: "on-failure"
 
   web_api:
     build: apis/web
@@ -62,3 +65,4 @@ services:
       TELEMSG_API_PORT: 8080
       WEB_API_HOST: "web_api"
       WEB_API_PORT: 8080
+    restart: "on-failure"
