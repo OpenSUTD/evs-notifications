@@ -52,14 +52,32 @@ services:
       - web_api
     build: apis/front
     image: evs-front-api:latest
-    ports:
-      - "${FRONTEND_API_PORT}:8080"
     environment:
       DB_API_HOST: "db_api"
       DB_API_PORT: "8080"
       WEB_API_HOST: "web_api"
       WEB_API_PORT: "8080"
     restart: "on-failure"
+
+  nginx:
+    depends_on:
+      - frontend_api
+    image: nginx:1.23
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./hosts/nginx/nginx.conf/:/etc/nginx/conf.d/nginx.conf:ro
+      - certbot-www:/var/www/certbot/:ro
+      - certbot-conf:/etc/nginx/ssl/:ro
+
+  certbot:
+    depends_on:
+      - nginx
+    image: certbot/certbot:v1.28.0
+    volumes:
+      - certbot-www:/var/www/certbot/
+      - certbot-conf:/etc/letsencrypt/
 
   telebot:
     depends_on:
@@ -86,3 +104,7 @@ services:
       - ./hosts/grafana/data:/var/lib/grafana
     ports:
       - "3000:3000"
+
+volumes:
+  certbot-www:
+  certbot-conf:
