@@ -83,3 +83,12 @@ services:
       WEB_API_HOST: "web_api"
       WEB_API_PORT: 8080
     restart: "on-failure"
+
+  grafana:
+    depends_on:
+      - db
+    image: grafana/grafana:9.0.2
+    volumes:
+      - ./hosts/grafana/data:/var/lib/grafana
+    ports:
+      - "3000:3000"
