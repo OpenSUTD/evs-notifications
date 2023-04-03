@@ -23,5 +23,5 @@ def get_balance_from_text(text):
     matches = re.findall(pattern, text)
     assert len(matches) > 1, 'Could not find balance on page'
 
-    match = matches[1][0].replace(',', '')
+    match = matches[0][0].replace(',', '')
     return float(match)
