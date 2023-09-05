@@ -9,7 +9,7 @@ def get_amount(username, password):
         data, headers = get_request_params(username, password)
 
         # store login cookies in session
-        r = sess.post(url=login_url, data=data, headers=headers)
+        r = sess.post(url=login_url, data=data, headers=headers, verify=False)
         if 'Invalid' in r.url:
             raise LoginError('Wrong login credentials')
 
