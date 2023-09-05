@@ -19,7 +19,7 @@ CREATE TABLE subscription (
     id SERIAL,
     username CHAR(8) NOT NULL,
     amount FLOAT(2) NOT NULL,
-    chat_id INTEGER NOT NULL,
+    chat_id BIGINT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT TIMEZONE('Asia/Singapore', now()),
     PRIMARY KEY (id),
     FOREIGN KEY (username) REFERENCES account,
@@ -29,7 +29,7 @@ CREATE TABLE subscription (
 CREATE TABLE notification (
     id SERIAL,
     username CHAR(8) NOT NULL,
-    chat_id INTEGER NOT NULL,
+    chat_id BIGINT NOT NULL,
     message_date DATE NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT TIMEZONE('Asia/Singapore', now()),
     PRIMARY KEY (id),
@@ -39,7 +39,7 @@ CREATE TABLE notification (
 CREATE TABLE command (
     id SERIAL,
     name VARCHAR(32) NOT NULL,
-    chat_id INTEGER NOT NULL,
+    chat_id BIGINT NOT NULL,
     is_completed BOOLEAN NOT NULL DEFAULT TRUE,
     is_cancelled BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT TIMEZONE('Asia/Singapore', now()),
