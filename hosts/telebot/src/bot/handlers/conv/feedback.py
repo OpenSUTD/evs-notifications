@@ -10,7 +10,7 @@ COMMAND_NAME = 'feedback'
 
 
 class States(Enum):
-    FEEDBACK = range(1)
+    FEEDBACK, CANCEL = range(2)
 
 
 def start(update, context):
@@ -24,8 +24,10 @@ def start(update, context):
 def feedback(update, context):
     chat_id = update.message.chat_id
     text = update.message.text
-
     logger.info(f'({chat_id}) Feedback: {text}')
+    if text == '/cancel':
+        return cancel(update, context)
+
     message_successful = message_admin(chat_id, text)
     if message_successful:
         log_command_in_db(COMMAND_NAME, update.message.chat_id, is_completed=True, is_cancelled=False)
@@ -55,6 +57,7 @@ conv_handler = ConversationHandler(
     entry_points=[CommandHandler('feedback', start)],
     states={
         States.FEEDBACK: [MessageHandler(Filters.text, feedback)],
+        States.CANCEL: [MessageHandler(Filters.text, cancel)],
     },
     fallbacks=[CommandHandler('cancel', cancel)]
 )
