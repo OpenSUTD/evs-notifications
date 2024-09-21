@@ -1,5 +1,5 @@
 from telegram.ext import Updater
-from .handlers import commands as cmd
+from .handlers import commands as cmd, message
 from .handlers.conv import (add_subscription as add,
                             view_subscription as view,
                             feedback as feedback)
@@ -16,6 +16,7 @@ class Bot(object):
         self.dispatcher.add_handler(add.conv_handler)
         self.dispatcher.add_handler(view.conv_handler)
         self.dispatcher.add_handler(feedback.conv_handler)
+        self.dispatcher.add_handler(message.message_handler)
 
     def start(self):
         self.updater.start_polling()

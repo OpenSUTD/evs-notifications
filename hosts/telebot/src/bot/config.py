@@ -8,3 +8,5 @@ DB_API_PORT = os.environ.get('DB_API_PORT', 8001)
 
 TELEMSG_API_HOST = os.environ.get('TELEMSG_API_HOST', 'localhost')
 TELEMSG_API_PORT = os.environ.get('TELEMSG_API_PORT', 5001)
+
+TELEGRAM_ADMIN_ID = int(os.environ['TELEGRAM_ADMIN_ID'])

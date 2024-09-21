@@ -88,6 +88,7 @@ services:
     image: evs-telebot:latest
     environment:
       TELEGRAM_TOKEN: "${TELEGRAM_TOKEN}"
+      TELEGRAM_ADMIN_ID: "${TELEGRAM_ADMIN_ID}"
       DB_API_HOST: "db_api"
       DB_API_PORT: 8080
       TELEMSG_API_HOST: "telemsg_api"
