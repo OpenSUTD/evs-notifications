@@ -73,6 +73,8 @@ def get_transactions(username: str, password: str, demo: bool) -> list:
     headers = {'Content-Type': 'application/json'}
     data = json.dumps({'username': username, 'password': password})
     req = requests.post(url, headers=headers, data=data)
+    if not req.ok:
+        return []
     transactions = json.loads(req.text)
     return transactions
 
