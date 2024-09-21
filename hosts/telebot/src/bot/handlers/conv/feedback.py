@@ -14,10 +14,15 @@ class States(Enum):
 
 
 def start(update, context):
-    update.message.reply_text('Hi! Feel free to leave a message here. '
-                              'Feedback or bug reports are always welcome. '
-                              'Anything you type next will be forwarded to the admin.\n\n'
-                              'Type /cancel to cancel.')
+    update.message.reply_text(
+        'Hi! Feel free to leave a message here. '
+        'Feedback or bug reports are always welcome. '
+        'Anything you type next will be forwarded to the admin.\n\n'
+        'Note that this bot has no affiliation with the EVS vendor. '
+        'Issues with login or balance not updating should be raised '
+        'with the vendor directly. Thank you!\n\n'
+        'Type /cancel to cancel.'
+    )
     return States.FEEDBACK
 
 

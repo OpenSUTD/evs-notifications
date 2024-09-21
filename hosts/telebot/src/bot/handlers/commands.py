@@ -28,6 +28,19 @@ def start(update, context):
     context.bot.send_message(chat_id=update.message.chat_id, text=text)
 
 
+@register_command_handler('about')
+def start(update, context):
+    log_command('about', update.message.chat_id)
+    text = (
+        'This bot works by simply logging into your account on your behalf '
+        'and checking the balance from there. If there are issues with your '
+        'account or balance, please check with the EVS vendor instead.\n\n'
+        'For more information, feel free to check out the project source '
+        'code here: https://github.com/OpenSUTD/evs-notifications.'
+    )
+    context.bot.send_message(chat_id=update.message.chat_id, text=text)
+
+
 @register_command_handler('balance')
 def balance(update, context):
     chat_id = update.message.chat_id
