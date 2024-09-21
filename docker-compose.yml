@@ -1,5 +1,3 @@
-version: '3.3'
-
 services:
   db:
     image: postgres:9.5
@@ -12,7 +10,6 @@ services:
       POSTGRES_USER: "${POSTGRES_USER}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
     restart: "on-failure"
-
 
   db_api:
     depends_on:
@@ -105,14 +102,6 @@ services:
       - ./hosts/grafana/data:/var/lib/grafana
     ports:
       - "3000:3000"
-
-  uptime_kuma:
-    image: louislam/uptime-kuma:1
-    volumes:
-      - ./hosts/uptime-kuma/data:/app/data
-    ports:
-      - "3001:3001"
-    restart: "always"
 
 volumes:
   certbot-www:

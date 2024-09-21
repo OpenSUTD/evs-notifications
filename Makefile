@@ -5,7 +5,7 @@ include .env
 .PHONY: up db-shell certbot-init certbot-renew help
 
 up:  ## Start necessary services for app (certbot not included)
-	docker compose up -d nginx telebot grafana uptime_kuma
+	docker compose up -d nginx telebot grafana
 
 db-shell:  ## Create Postgres shell
 	docker compose exec db psql -U ${POSTGRES_USER} -d ${POSTGRES_DB}
